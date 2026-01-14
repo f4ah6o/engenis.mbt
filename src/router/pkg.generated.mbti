@@ -15,9 +15,36 @@ pub(all) struct PathParams {
 }
 pub fn PathParams::get(Self, String) -> String?
 pub fn PathParams::new() -> Self
-pub fn PathParams::require(Self, String) -> String raise
+pub fn PathParams::require(Self, String) -> String
 pub fn PathParams::set(Self, String, String) -> Self
 pub impl Show for PathParams
+
+pub(all) enum Route {
+  Get(String)
+  Post(String)
+  Put(String)
+  Delete(String)
+  Patch(String)
+}
+pub fn Route::delete(String) -> Self
+pub fn Route::get(String) -> Self
+pub fn Route::patch(String) -> Self
+pub fn Route::path(Self) -> String
+pub fn Route::post(String) -> Self
+pub fn Route::put(String) -> Self
+pub fn Route::verb(Self) -> RouteMethod
+pub impl Eq for Route
+pub impl Show for Route
+
+pub(all) enum RouteMethod {
+  Get
+  Post
+  Put
+  Delete
+  Patch
+}
+pub impl Eq for RouteMethod
+pub impl Show for RouteMethod
 
 // Type aliases
 

@@ -2,7 +2,7 @@
 /// カウンター状態
 /// Note: 本来は @atomic などでスレッドセーフにする必要があります
 /// 簡易実装としてミュータブル変数を使用
-struct Counter {
+priv struct Counter {
   mut value : Int
 }
 
@@ -33,61 +33,79 @@ fn get_count() -> Int {
 /// メインページの HTML を構築（HTML DSL + HDA で型安全に構築）
 fn render_home_page() -> String {
   let count = get_count()
-
+  let inc_link = @hda.LinkRel::new(
+      @hda.Rel::namespaced("counter", "inc"),
+      @router.Route::post("/counter/inc"),
+    )
+    .target("#counter")
+    .swap(@html.Swap::InnerHTML)
+  let dec_link = @hda.LinkRel::new(
+      @hda.Rel::namespaced("counter", "dec"),
+      @router.Route::post("/counter/dec"),
+    )
+    .target("#counter")
+    .swap(@html.Swap::InnerHTML)
   @html.fragment([
     @html.doctype(),
     @html.html()
-      .attr("lang", @html.AttrValue::Str("en"))
-      .children([
-        @html.head()
-          .children([
-            @html.meta()
-              .attr("charset", @html.AttrValue::Str("UTF-8"))
-              .empty(),
-            @html.title()
-              .text("Engenis Counter"),
-            // TEMPORARY: HTMX is used as a client-side dependency during development.
-            // This will be replaced with a Pure MoonBit client runtime in the future.
-            // See: spec/CLIENT_DEPENDENCY.md
-            @html.script()
-              .attr("src", @html.AttrValue::Str("https://unpkg.com/htmx.org@1.9.10"))
-              .empty(),
-          ]),
-        @html.body()
-          .attr("style", @html.AttrValue::Str("font-family: system-ui; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0;"))
-          .children([
-            @html.div()
-              .attr("style", @html.AttrValue::Str("text-align: center;"))
-              .children([
-                @html.h1()
-                  .text("Engenis Counter"),
-                @html.p()
-                  .text("Hypermedia Driven Application with MoonBit"),
-                @html.div()
-                  .id("counter")
-                  .attr("style", @html.AttrValue::Str("font-size: 48px; margin: 20px 0;"))
-                  .text(count.to_string()),
-                @html.div()
-                  .attr("style", @html.AttrValue::Str("gap: 10px; display: flex;"))
-                  .children([
-                    @html.button()
-                      .hx_post("/counter/inc")
-                      .hx_target("#counter")
-                      .hx_swap_safe(@html.Swap::InnerHTML)
-                      .attr("style", @html.AttrValue::Str("font-size: 18px; padding: 10px 20px; cursor: pointer;"))
-                      .text("+"),
-                    @html.button()
-                      .hx_post("/counter/dec")
-                      .hx_target("#counter")
-                      .hx_swap_safe(@html.Swap::InnerHTML)
-                      .attr("style", @html.AttrValue::Str("font-size: 18px; padding: 10px 20px; cursor: pointer;"))
-                      .text("-"),
-                  ]),
-              ]),
-          ]),
+    .attr("lang", @html.AttrValue::Str("en"))
+    .children([
+      @html.head().children([
+        @html.meta().attr("charset", @html.AttrValue::Str("UTF-8")).empty(),
+        @html.title().text("Engenis Counter"),
+        // TEMPORARY: HTMX is used as a client-side dependency during development.
+        // This will be replaced with a Pure MoonBit client runtime in the future.
+        // See: spec/CLIENT_DEPENDENCY.md
+        @html.script()
+        .attr("src", @html.AttrValue::Str("https://unpkg.com/htmx.org@1.9.10"))
+        .empty(),
       ]),
-  ])
-    .render()
+      @html.body()
+      .attr(
+        "style",
+        @html.AttrValue::Str(
+          "font-family: system-ui; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0;",
+        ),
+      )
+      .children([
+        @html.div()
+        .attr("style", @html.AttrValue::Str("text-align: center;"))
+        .children([
+          @html.h1().text("Engenis Counter"),
+          @html.p().text("Hypermedia Driven Application with MoonBit"),
+          @html.div()
+          .id("counter")
+          .attr(
+            "style",
+            @html.AttrValue::Str("font-size: 48px; margin: 20px 0;"),
+          )
+          .text(count.to_string()),
+          @html.div()
+          .attr("style", @html.AttrValue::Str("gap: 10px; display: flex;"))
+          .children([
+            @html.button()
+            .attrs(inc_link.to_attrs())
+            .attr(
+              "style",
+              @html.AttrValue::Str(
+                "font-size: 18px; padding: 10px 20px; cursor: pointer;",
+              ),
+            )
+            .text("+"),
+            @html.button()
+            .attrs(dec_link.to_attrs())
+            .attr(
+              "style",
+              @html.AttrValue::Str(
+                "font-size: 18px; padding: 10px 20px; cursor: pointer;",
+              ),
+            )
+            .text("-"),
+          ]),
+        ]),
+      ]),
+    ]),
+  ]).render()
 }
 
 ///|

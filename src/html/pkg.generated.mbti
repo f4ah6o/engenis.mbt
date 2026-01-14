@@ -139,7 +139,18 @@ pub fn Attrs::attr_type(Self, String) -> Self
 pub fn Attrs::class(Self, String) -> Self
 pub fn Attrs::data(Self, String, String) -> Self
 pub fn Attrs::href(Self, String) -> Self
+pub fn Attrs::hx_delete(Self, String) -> Self
+pub fn Attrs::hx_get(Self, String) -> Self
+pub fn Attrs::hx_patch(Self, String) -> Self
+pub fn Attrs::hx_post(Self, String) -> Self
+pub fn Attrs::hx_put(Self, String) -> Self
+pub fn Attrs::hx_swap(Self, String) -> Self
+pub fn Attrs::hx_swap_safe(Self, Swap) -> Self
+pub fn Attrs::hx_target(Self, String) -> Self
+pub fn Attrs::hx_trigger(Self, String) -> Self
+pub fn Attrs::hx_trigger_safe(Self, Trigger) -> Self
 pub fn Attrs::id(Self, String) -> Self
+pub fn Attrs::merge(Self, Self) -> Self
 pub fn Attrs::name(Self, String) -> Self
 pub fn Attrs::new() -> Self
 pub fn Attrs::placeholder(Self, String) -> Self
@@ -149,7 +160,7 @@ pub impl Show for Attrs
 pub(all) struct ElementBuilder {
   tag : String
   attrs : Attrs
-  void : Bool
+  is_void : Bool
 }
 pub fn ElementBuilder::attr(Self, String, AttrValue) -> Self
 pub fn ElementBuilder::attr_type(Self, String) -> Self
@@ -160,6 +171,16 @@ pub fn ElementBuilder::class(Self, String) -> Self
 pub fn ElementBuilder::data(Self, String, String) -> Self
 pub fn ElementBuilder::empty(Self) -> Html
 pub fn ElementBuilder::href(Self, String) -> Self
+pub fn ElementBuilder::hx_delete(Self, String) -> Self
+pub fn ElementBuilder::hx_get(Self, String) -> Self
+pub fn ElementBuilder::hx_patch(Self, String) -> Self
+pub fn ElementBuilder::hx_post(Self, String) -> Self
+pub fn ElementBuilder::hx_put(Self, String) -> Self
+pub fn ElementBuilder::hx_swap(Self, String) -> Self
+pub fn ElementBuilder::hx_swap_safe(Self, Swap) -> Self
+pub fn ElementBuilder::hx_target(Self, String) -> Self
+pub fn ElementBuilder::hx_trigger(Self, String) -> Self
+pub fn ElementBuilder::hx_trigger_safe(Self, Trigger) -> Self
 pub fn ElementBuilder::id(Self, String) -> Self
 pub fn ElementBuilder::name(Self, String) -> Self
 pub fn ElementBuilder::placeholder(Self, String) -> Self
@@ -175,6 +196,43 @@ pub(all) enum Html {
 }
 pub fn Html::render(Self) -> String
 pub impl Show for Html
+
+pub(all) enum Swap {
+  InnerHTML
+  OuterHTML
+  BeforeBegin
+  AfterBegin
+  BeforeEnd
+  AfterEnd
+  Delete
+  None
+}
+pub fn Swap::to_string(Self) -> String
+pub impl Eq for Swap
+pub impl Show for Swap
+
+pub(all) enum Trigger {
+  Event(String)
+  EventWithMods(String, Array[TriggerMod])
+  Multiple(Array[Trigger])
+}
+pub fn Trigger::to_string(Self) -> String
+pub impl Show for Trigger
+
+pub(all) enum TriggerMod {
+  Once
+  Changed
+  Delay(Int)
+  Throttle(Int)
+  From(String)
+  Target(String)
+  Filter(String)
+  Consumed
+  Queue(String)
+}
+pub fn TriggerMod::to_string(Self) -> String
+pub impl Eq for TriggerMod
+pub impl Show for TriggerMod
 
 // Type aliases
 

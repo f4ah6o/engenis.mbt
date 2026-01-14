@@ -34,24 +34,21 @@ test "Attrs::new creates empty attrs" {
 ///|
 /// Attrs::add は属性を追加する
 test "Attrs::add adds attribute" {
-  let attrs = @html.Attrs::new()
-    .add("class", @html.AttrValue::Str("btn"))
+  let attrs = @html.Attrs::new().add("class", @html.AttrValue::Str("btn"))
   assert_eq(attrs.attrs.length(), 1)
 }
 
 ///|
 /// Attrs::class は class 属性を設定する
 test "Attrs::class sets class attribute" {
-  let attrs = @html.Attrs::new()
-    .class("container")
+  let attrs = @html.Attrs::new().class("container")
   assert_eq(attrs.attrs.length(), 1)
 }
 
 ///|
 /// Attrs::id は id 属性を設定する
 test "Attrs::id sets id attribute" {
-  let attrs = @html.Attrs::new()
-    .id("main")
+  let attrs = @html.Attrs::new().id("main")
   assert_eq(attrs.attrs.length(), 1)
 }
 
@@ -92,10 +89,7 @@ test "ElementBuilder renders simple element" {
 ///|
 /// ElementBuilder は属性付きの要素をレンダリングする
 test "ElementBuilder renders element with id" {
-  let html = @html.div()
-    .id("x")
-    .text("Ok")
-    .render()
+  let html = @html.div().id("x").text("Ok").render()
   // レンダリング結果が空でないことを確認
   let has_content = html.length() > 0
   assert_true(has_content)
@@ -104,11 +98,7 @@ test "ElementBuilder renders element with id" {
 ///|
 /// ElementBuilder は複数の属性を扱える
 test "ElementBuilder renders element with multiple attributes" {
-  let html = @html.div()
-    .id("a")
-    .class("b")
-    .text("Ok")
-    .render()
+  let html = @html.div().id("a").class("b").text("Ok").render()
   // レンダリング結果が空でないことを確認
   let has_content = html.length() > 0
   assert_true(has_content)
@@ -118,10 +108,7 @@ test "ElementBuilder renders element with multiple attributes" {
 /// ElementBuilder は入れ子の要素をレンダリングする
 test "ElementBuilder renders nested elements" {
   let html = @html.div()
-    .children([
-      @html.p().text("A"),
-      @html.p().text("B"),
-    ])
+    .children([@html.p().text("A"), @html.p().text("B")])
     .render()
   // レンダリング結果が空でないことを確認
   let has_content = html.length() > 0
@@ -131,11 +118,7 @@ test "ElementBuilder renders nested elements" {
 ///|
 /// fragment は複数の要素を結合する
 test "fragment combines multiple elements" {
-  let html = @html.fragment([
-    @html.h1().text("T"),
-    @html.p().text("C"),
-  ])
-    .render()
+  let html = @html.fragment([@html.h1().text("T"), @html.p().text("C")]).render()
   // レンダリング結果が空でないことを確認
   let has_content = html.length() > 0
   assert_true(has_content)
@@ -144,11 +127,7 @@ test "fragment combines multiple elements" {
 ///|
 /// doctype は DOCTYPE 宣言を生成する
 test "doctype generates DOCTYPE declaration" {
-  let html = @html.fragment([
-    @html.doctype(),
-    @html.html().children([]),
-  ])
-    .render()
+  let html = @html.fragment([@html.doctype(), @html.html().children([])]).render()
   // DOCTYPE 宣言が含まれることを確認（先頭にあるはず）
   let has_doctype = html.length() > 0
   assert_true(has_doctype)

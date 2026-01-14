@@ -5,8 +5,7 @@
 /// Content-Type ヘッダーが正しく設定されることを確認
 test "content-type header is set correctly" {
   // デフォルトの Content-Type を検証
-  let response = Response::ok()
-    .text("Hello")
+  let response = Response::ok().text("Hello")
   assert_eq(response.status, 200)
   let has_content_type = response.headers.length() > 0
   assert_true(has_content_type)
@@ -15,9 +14,7 @@ test "content-type header is set correctly" {
 ///|
 /// カスタム Content-Type が設定されることを確認
 test "custom content-type header" {
-  let response = Response::ok()
-    .content_type("application/json")
-    .text("{}")
+  let response = Response::ok().content_type("application/json").text("{}")
   assert_eq(response.status, 200)
   assert_true(response.headers.length() > 0)
 }
@@ -28,7 +25,7 @@ test "hda response builder sets hx-reswap header" {
   let response = hda_response(
     "<div>Test</div>",
     swap=@html.Swap::InnerHTML,
-    target="#main"
+    target="#main",
   ).build()
   assert_eq(response.status, 200)
   // HX-Reswap ヘッダーが含まれることを確認
@@ -41,7 +38,7 @@ test "hda response builder sets hx-retarget header" {
   let response = hda_response(
     "<div>Test</div>",
     swap=@html.Swap::OuterHTML,
-    target="#main"
+    target="#main",
   ).build()
   assert_eq(response.status, 200)
   assert_true(response.headers.length() > 0)
@@ -73,10 +70,10 @@ test "response builder multiple headers" {
 /// HdaResponseBuilder で複数の HX-* ヘッダーが設定されることを確認
 test "hda response builder multiple hx headers" {
   let response = hda_response(
-    "<div>Test</div>",
-    swap=@html.Swap::InnerHTML,
-    target="#main"
-  )
+      "<div>Test</div>",
+      swap=@html.Swap::InnerHTML,
+      target="#main",
+    )
     .trigger("loaded")
     .build()
   assert_eq(response.status, 200)
@@ -122,7 +119,7 @@ test "response body text" {
   let response = Response::ok().text("Hello World")
   match response.body {
     ResponseBody::Text(s) => assert_true(s.length() > 0)
-    _ => { assert_true(false) }
+    _ => assert_true(false)
   }
 }
 
@@ -131,8 +128,8 @@ test "response body text" {
 test "response body empty" {
   let response = Response::ok().empty()
   match response.body {
-    ResponseBody::Empty => { assert_true(true) }
-    _ => { assert_true(false) }
+    ResponseBody::Empty => assert_true(true)
+    _ => assert_true(false)
   }
 }
 

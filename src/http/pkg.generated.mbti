@@ -2,17 +2,38 @@
 package "f4ah6o/engenis/src/http"
 
 import(
+  "f4ah6o/engenis/src/html"
   "moonbitlang/async/socket"
   "moonbitlang/core/hashmap"
 )
 
 // Values
+pub fn hda_response(String, swap? : @html.Swap, target? : String) -> HdaResponseBuilder
+
 pub async fn start_counter_server() -> Unit
 
 // Errors
 
 // Types and methods
-type Counter
+pub(all) struct HdaResponseBuilder {
+  status : Int
+  reason : String
+  headers : @hashmap.HashMap[String, String]
+  body : String
+}
+pub fn HdaResponseBuilder::build(Self) -> Response
+pub fn HdaResponseBuilder::header(Self, String, String) -> Self
+pub fn HdaResponseBuilder::html(Self, String) -> Self
+pub fn HdaResponseBuilder::new(Int, String) -> Self
+pub fn HdaResponseBuilder::push_url(Self, String) -> Self
+pub fn HdaResponseBuilder::redirect(Self, String) -> Self
+pub fn HdaResponseBuilder::replace_url(Self, String) -> Self
+pub fn HdaResponseBuilder::reswap(Self, @html.Swap) -> Self
+pub fn HdaResponseBuilder::swap(Self, @html.Swap) -> Self
+pub fn HdaResponseBuilder::target(Self, String) -> Self
+pub fn HdaResponseBuilder::trigger(Self, String) -> Self
+pub fn HdaResponseBuilder::trigger_after_settle(Self, String) -> Self
+pub fn HdaResponseBuilder::trigger_after_swap(Self, String) -> Self
 
 pub(all) enum Method {
   Get

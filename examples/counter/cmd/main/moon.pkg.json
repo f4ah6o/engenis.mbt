@@ -2,8 +2,6 @@
   "is_main": true,
   "import": [
     { "path": "f4ah6o/engenis/src/http" },
-    { "path": "moonbitlang/async" },
-    { "path": "moonbitlang/async/http", "alias": "async_http" },
-    { "path": "moonbitlang/async/socket", "alias": "async_socket" }
+    { "path": "moonbitlang/async" }
   ]
 }

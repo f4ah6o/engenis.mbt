@@ -22,6 +22,21 @@ HTML DSLを通じて型安全なハイパーメディアアプリケーション
 * **HDA属性** - `hx_get`, `hx_post`, `hx_swap_safe` などの型安全な属性
 * **HTTPサーバー** - Pure MoonBit + `moonbitlang/async` による実装
 
+## Typed Link Relations
+
+```mbt nocheck
+let inc_link = @hda.LinkRel::new(
+  @hda.Rel::namespaced("counter", "inc"),
+  @router.Route::post("/counter/inc"),
+)
+  .target("#counter")
+  .swap(@html.Swap::InnerHTML)
+
+@html.button()
+  .attrs(inc_link.to_attrs())
+  .text("+")
+```
+
 ## Current Status
 
 * [x] Type-safe HTML DSL

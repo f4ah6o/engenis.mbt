@@ -12,7 +12,7 @@ test "HdaAttrs::get sets hx-get" {
   let value = attrs.attrs.get("hx-get")
   match value {
     Some(v) => assert_eq(v, "/api/data")
-    None => { assert_true(false) }
+    None => assert_true(false)
   }
 }
 
@@ -23,7 +23,7 @@ test "HdaAttrs::post sets hx-post" {
   let value = attrs.attrs.get("hx-post")
   match value {
     Some(v) => assert_eq(v, "/api/create")
-    None => { assert_true(false) }
+    None => assert_true(false)
   }
 }
 
@@ -34,7 +34,7 @@ test "HdaAttrs::put sets hx-put" {
   let value = attrs.attrs.get("hx-put")
   match value {
     Some(v) => assert_eq(v, "/api/update")
-    None => { assert_true(false) }
+    None => assert_true(false)
   }
 }
 
@@ -45,7 +45,7 @@ test "HdaAttrs::delete sets hx-delete" {
   let value = attrs.attrs.get("hx-delete")
   match value {
     Some(v) => assert_eq(v, "/api/remove")
-    None => { assert_true(false) }
+    None => assert_true(false)
   }
 }
 
@@ -56,31 +56,29 @@ test "HdaAttrs::patch sets hx-patch" {
   let value = attrs.attrs.get("hx-patch")
   match value {
     Some(v) => assert_eq(v, "/api/modify")
-    None => { assert_true(false) }
+    None => assert_true(false)
   }
 }
 
 ///|
 /// HdaAttrs::swap は hx-swap 属性を設定する
 test "HdaAttrs::swap sets hx-swap" {
-  let attrs = @hda.HdaAttrs::new()
-    .swap(@html.Swap::InnerHTML)
+  let attrs = @hda.HdaAttrs::new().swap(@html.Swap::InnerHTML)
   let value = attrs.attrs.get("hx-swap")
   match value {
     Some(v) => assert_eq(v, "innerHTML")
-    None => { assert_true(false) }
+    None => assert_true(false)
   }
 }
 
 ///|
 /// HdaAttrs::swap は outerHTML を設定できる
 test "HdaAttrs::swap sets hx-swap with OuterHTML" {
-  let attrs = @hda.HdaAttrs::new()
-    .swap(@html.Swap::OuterHTML)
+  let attrs = @hda.HdaAttrs::new().swap(@html.Swap::OuterHTML)
   let value = attrs.attrs.get("hx-swap")
   match value {
     Some(v) => assert_eq(v, "outerHTML")
-    None => { assert_true(false) }
+    None => assert_true(false)
   }
 }
 
@@ -91,19 +89,18 @@ test "HdaAttrs::target sets hx-target" {
   let value = attrs.attrs.get("hx-target")
   match value {
     Some(v) => assert_eq(v, "#main")
-    None => { assert_true(false) }
+    None => assert_true(false)
   }
 }
 
 ///|
 /// HdaAttrs::trigger は hx-trigger 属性を設定する
 test "HdaAttrs::trigger sets hx-trigger" {
-  let attrs = @hda.HdaAttrs::new()
-    .trigger(@html.Trigger::Event("click"))
+  let attrs = @hda.HdaAttrs::new().trigger(@html.Trigger::Event("click"))
   let value = attrs.attrs.get("hx-trigger")
   match value {
     Some(v) => assert_eq(v, "click")
-    None => { assert_true(false) }
+    None => assert_true(false)
   }
 }
 
@@ -114,7 +111,7 @@ test "HdaAttrs::on sets trigger with event" {
   let value = attrs.attrs.get("hx-trigger")
   match value {
     Some(v) => assert_eq(v, "click")
-    None => { assert_true(false) }
+    None => assert_true(false)
   }
 }
 
@@ -125,7 +122,7 @@ test "HdaAttrs::push_url sets hx-push-url" {
   let value = attrs.attrs.get("hx-push-url")
   match value {
     Some(v) => assert_eq(v, "/new-path")
-    None => { assert_true(false) }
+    None => assert_true(false)
   }
 }
 
@@ -136,7 +133,7 @@ test "HdaAttrs::confirm sets hx-confirm" {
   let value = attrs.attrs.get("hx-confirm")
   match value {
     Some(v) => assert_eq(v, "Are you sure?")
-    None => { assert_true(false) }
+    None => assert_true(false)
   }
 }
 
@@ -147,16 +144,14 @@ test "HdaAttrs::disable sets hx-disable" {
   let value = attrs.attrs.get("hx-disable")
   match value {
     Some(v) => assert_eq(v, "true")
-    None => { assert_true(false) }
+    None => assert_true(false)
   }
 }
 
 ///|
 /// HdaAttrs::to_html_attrs は html.Attrs に変換する
 test "HdaAttrs::to_html_attrs converts correctly" {
-  let hda_attrs = @hda.HdaAttrs::new()
-    .post("/api/test")
-    .target("#main")
+  let hda_attrs = @hda.HdaAttrs::new().post("/api/test").target("#main")
   let html_attrs = hda_attrs.to_html_attrs()
   // 変換された属性の数を確認
   assert_eq(html_attrs.attrs.length(), 2)

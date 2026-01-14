@@ -270,7 +270,7 @@ fn escape_html_char(ch : Int) -> String {
 ///|
 fn escape_html(s : String) -> String {
   let mut result = ""
-  let bytes = s.to_bytes()
+  let bytes = @encoding/utf8.encode(s)
   for i = 0; i < bytes.length(); i = i + 1 {
     result = result + escape_html_char(bytes[i].to_int())
   }
@@ -298,7 +298,7 @@ fn escape_attr_char(ch : Int) -> String {
 ///|
 fn escape_attr(s : String) -> String {
   let mut result = ""
-  let bytes = s.to_bytes()
+  let bytes = @encoding/utf8.encode(s)
   for i = 0; i < bytes.length(); i = i + 1 {
     result = result + escape_attr_char(bytes[i].to_int())
   }
@@ -397,17 +397,17 @@ pub fn when(condition : Bool, then : Html) -> Html {
 pub(all) struct ElementBuilder {
   tag : String
   attrs : Attrs
-  void : Bool
+  is_void : Bool
 }
 
 ///|
 fn ElementBuilder::new(tag : String) -> ElementBuilder {
-  { tag, attrs: Attrs::new(), void: false }
+  { tag, attrs: Attrs::new(), is_void: false }
 }
 
 ///|
 fn ElementBuilder::new_void(tag : String) -> ElementBuilder {
-  { tag, attrs: Attrs::new(), void: true }
+  { tag, attrs: Attrs::new(), is_void: true }
 }
 
 ///|
@@ -584,22 +584,22 @@ pub fn ElementBuilder::children(
   self : ElementBuilder,
   children : Array[Html],
 ) -> Html {
-  Element(self.tag, self.attrs, children, self.void)
+  Element(self.tag, self.attrs, children, self.is_void)
 }
 
 ///|
 pub fn ElementBuilder::child(self : ElementBuilder, child : Html) -> Html {
-  Element(self.tag, self.attrs, [child], self.void)
+  Element(self.tag, self.attrs, [child], self.is_void)
 }
 
 ///|
 pub fn ElementBuilder::text(self : ElementBuilder, t : String) -> Html {
-  Element(self.tag, self.attrs, [Text(t)], self.void)
+  Element(self.tag, self.attrs, [Text(t)], self.is_void)
 }
 
 ///|
 pub fn ElementBuilder::empty(self : ElementBuilder) -> Html {
-  Element(self.tag, self.attrs, [], self.void)
+  Element(self.tag, self.attrs, [], self.is_void)
 }
 
 ///|
