@@ -46,6 +46,9 @@ fn render_home_page() -> String {
               .empty(),
             @html.title()
               .text("Engenis Counter"),
+            // TEMPORARY: HTMX is used as a client-side dependency during development.
+            // This will be replaced with a Pure MoonBit client runtime in the future.
+            // See: spec/CLIENT_DEPENDENCY.md
             @html.script()
               .attr("src", @html.AttrValue::Str("https://unpkg.com/htmx.org@1.9.10"))
               .empty(),
