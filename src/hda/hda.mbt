@@ -1,99 +1,4 @@
 ///|
-/// HDA Swap戦略
-pub(all) enum Swap {
-  InnerHTML
-  OuterHTML
-  BeforeBegin
-  AfterBegin
-  BeforeEnd
-  AfterEnd
-  Delete
-  None
-} derive(Show, Eq)
-
-///|
-pub fn Swap::to_string(self : Swap) -> String {
-  match self {
-    InnerHTML => "innerHTML"
-    OuterHTML => "outerHTML"
-    BeforeBegin => "beforebegin"
-    AfterBegin => "afterbegin"
-    BeforeEnd => "beforeend"
-    AfterEnd => "afterend"
-    Delete => "delete"
-    None => "none"
-  }
-}
-
-///|
-pub fn Swap::from_string(s : String) -> Swap? {
-  match s {
-    "innerHTML" => Some(InnerHTML)
-    "outerHTML" => Some(OuterHTML)
-    "beforebegin" => Some(BeforeBegin)
-    "afterbegin" => Some(AfterBegin)
-    "beforeend" => Some(BeforeEnd)
-    "afterend" => Some(AfterEnd)
-    "delete" => Some(Delete)
-    "none" => Some(None)
-    _ => None
-  }
-}
-
-///|
-/// トリガー修飾子
-pub(all) enum TriggerMod {
-  Once
-  Changed
-  Delay(Int)
-  Throttle(Int)
-  From(String)
-  Target(String)
-  Filter(String)
-  Consumed
-  Queue(String)
-} derive(Show, Eq)
-
-///|
-pub fn TriggerMod::to_string(self : TriggerMod) -> String {
-  match self {
-    Once => "once"
-    Changed => "changed"
-    Delay(ms) => "delay:" + ms.to_string() + "ms"
-    Throttle(ms) => "throttle:" + ms.to_string() + "ms"
-    From(sel) => "from:" + sel
-    Target(sel) => "target:" + sel
-    Filter(expr) => "filter:" + expr
-    Consumed => "consumed"
-    Queue(name) => "queue:" + name
-  }
-}
-
-///|
-/// トリガー
-pub(all) enum Trigger {
-  Event(String)
-  EventWithMods(String, Array[TriggerMod])
-  Multiple(Array[Trigger])
-} derive(Show)
-
-///|
-pub fn Trigger::to_string(self : Trigger) -> String {
-  match self {
-    Event(name) => name
-    EventWithMods(name, mods) => {
-      let mod_str = mods.map(TriggerMod::to_string).join(", ")
-      if mod_str.length() > 0 {
-        name + "[" + mod_str + "]"
-      } else {
-        name
-      }
-    }
-    Multiple(triggers) => triggers.map(Trigger::to_string).join(", ")
-  }
-}
-
-///|
 /// HDAレスポンスビルダー
 pub(all) struct HdaResponseBuilder {
   status : Int
@@ -132,7 +37,7 @@ pub fn HdaResponseBuilder::header(
 ///|
 pub fn HdaResponseBuilder::swap(
   self : HdaResponseBuilder,
-  s : Swap,
+  s : @html.Swap,
 ) -> HdaResponseBuilder {
   self.header("HX-Reswap", s.to_string())
 }
@@ -196,7 +101,7 @@ pub fn HdaResponseBuilder::replace_url(
 ///|
 pub fn HdaResponseBuilder::reswap(
   self : HdaResponseBuilder,
-  s : Swap,
+  s : @html.Swap,
 ) -> HdaResponseBuilder {
   self.swap(s)
 }
@@ -234,7 +139,7 @@ pub fn html_response(html : String) -> HdaResponseBuilder {
 /// HDAレスポンスを作成
 pub fn hda_response(
   html : String,
-  swap? : Swap = InnerHTML,
+  swap? : @html.Swap = @html.Swap::InnerHTML,
   target? : String = "",
 ) -> HdaResponseBuilder {
   let mut builder = HdaResponseBuilder::new(200, "OK")
@@ -291,7 +196,7 @@ pub fn HdaAttrs::patch(self : HdaAttrs, url : String) -> HdaAttrs {
 }
 
 ///|
-pub fn HdaAttrs::swap(self : HdaAttrs, s : Swap) -> HdaAttrs {
+pub fn HdaAttrs::swap(self : HdaAttrs, s : @html.Swap) -> HdaAttrs {
   self._add("hx-swap", s.to_string())
 }
 
@@ -301,13 +206,13 @@ pub fn HdaAttrs::target(self : HdaAttrs, selector : String) -> HdaAttrs {
 }
 
 ///|
-pub fn HdaAttrs::trigger(self : HdaAttrs, t : Trigger) -> HdaAttrs {
+pub fn HdaAttrs::trigger(self : HdaAttrs, t : @html.Trigger) -> HdaAttrs {
   self._add("hx-trigger", t.to_string())
 }
 
 ///|
 pub fn HdaAttrs::on(self : HdaAttrs, event : String) -> HdaAttrs {
-  self.trigger(Trigger::Event(event))
+  self.trigger(@html.Trigger::Event(event))
 }
 
 ///|
