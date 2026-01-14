@@ -1,0 +1,5 @@
+{
+  "import": [
+    { "path": "f4ah6o/engenis/src/http", "alias": "http" }
+  ]
+}
