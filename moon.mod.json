@@ -1,9 +1,17 @@
 {
   "name": "f4ah6o/engenis",
   "version": "0.1.0",
+  "deps": {
+    "moonbitlang/async": "0.16.1"
+  },
   "readme": "README.mbt.md",
   "repository": "",
   "license": "Apache-2.0",
-  "keywords": [],
-  "description": ""
+  "keywords": [
+    "hypermedia",
+    "http",
+    "server",
+    "html"
+  ],
+  "description": "Pure MoonBit Hypermedia Driven Application framework"
 }
