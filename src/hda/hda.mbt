@@ -119,7 +119,8 @@ pub fn HdaResponseBuilder::header(
   key : String,
   value : String,
 ) -> HdaResponseBuilder {
-  let new_headers = @hashmap.from_array([(key, value)])
+  let new_headers = self.headers.copy()
+  new_headers.set(key, value)
   {
     status: self.status,
     reason: self.reason,
