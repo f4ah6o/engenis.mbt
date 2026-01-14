@@ -147,6 +147,98 @@ pub fn Attrs::data(self : Attrs, key : String, value : String) -> Attrs {
 }
 
 ///|
+/// Htmx属性: hx-swap (型安全版 - Swap enumを受け取る)
+pub fn Attrs::hx_swap_safe(self : Attrs, swap : Swap) -> Attrs {
+  self.hx_swap(swap.to_string())
+}
+
+///|
+/// Htmx属性: hx-trigger (型安全版 - Trigger enumを受け取る)
+pub fn Attrs::hx_trigger_safe(self : Attrs, trigger : Trigger) -> Attrs {
+  self.hx_trigger(trigger.to_string())
+}
+
+///|
+/// HDA Swap戦略
+pub(all) enum Swap {
+  InnerHTML
+  OuterHTML
+  BeforeBegin
+  AfterBegin
+  BeforeEnd
+  AfterEnd
+  Delete
+  None
+} derive(Show, Eq)
+
+///|
+pub fn Swap::to_string(self : Swap) -> String {
+  match self {
+    InnerHTML => "innerHTML"
+    OuterHTML => "outerHTML"
+    BeforeBegin => "beforebegin"
+    AfterBegin => "afterbegin"
+    BeforeEnd => "beforeend"
+    AfterEnd => "afterend"
+    Delete => "delete"
+    None => "none"
+  }
+}
+
+///|
+/// トリガー修飾子
+pub(all) enum TriggerMod {
+  Once
+  Changed
+  Delay(Int)
+  Throttle(Int)
+  From(String)
+  Target(String)
+  Filter(String)
+  Consumed
+  Queue(String)
+} derive(Show, Eq)
+
+///|
+pub fn TriggerMod::to_string(self : TriggerMod) -> String {
+  match self {
+    Once => "once"
+    Changed => "changed"
+    Delay(ms) => "delay:" + ms.to_string() + "ms"
+    Throttle(ms) => "throttle:" + ms.to_string() + "ms"
+    From(sel) => "from:" + sel
+    Target(sel) => "target:" + sel
+    Filter(expr) => "filter:" + expr
+    Consumed => "consumed"
+    Queue(name) => "queue:" + name
+  }
+}
+
+///|
+/// トリガー
+pub(all) enum Trigger {
+  Event(String)
+  EventWithMods(String, Array[TriggerMod])
+  Multiple(Array[Trigger])
+} derive(Show)
+
+///|
+pub fn Trigger::to_string(self : Trigger) -> String {
+  match self {
+    Event(name) => name
+    EventWithMods(name, mods) => {
+      let mod_str = mods.map(TriggerMod::to_string).join(", ")
+      if mod_str.length() > 0 {
+        name + "[" + mod_str + "]"
+      } else {
+        name
+      }
+    }
+    Multiple(triggers) => triggers.map(Trigger::to_string).join(", ")
+  }
+}
+
+///|
 /// HTML要素
 pub(all) enum Html {
   Element(String, Attrs, Array[Html], Bool)
@@ -467,6 +559,24 @@ pub fn ElementBuilder::data(
   value : String,
 ) -> ElementBuilder {
   { ..self, attrs: self.attrs.data(key, value) }
+}
+
+///|
+/// Htmx属性: hx-swap (型安全版 - Swap enumを受け取る)
+pub fn ElementBuilder::hx_swap_safe(
+  self : ElementBuilder,
+  swap : Swap,
+) -> ElementBuilder {
+  { ..self, attrs: self.attrs.hx_swap_safe(swap) }
+}
+
+///|
+/// Htmx属性: hx-trigger (型安全版 - Trigger enumを受け取る)
+pub fn ElementBuilder::hx_trigger_safe(
+  self : ElementBuilder,
+  trigger : Trigger,
+) -> ElementBuilder {
+  { ..self, attrs: self.attrs.hx_trigger_safe(trigger) }
 }
 
 ///|
