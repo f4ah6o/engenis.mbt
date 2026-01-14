@@ -50,7 +50,8 @@ async fn send_response(
   resp : Response,
 ) -> Unit {
   // ヘッダーを送信
-  conn.send_response(resp.status, resp.reason, extra_headers={})
+  let headers_map = Map::from_array(resp.headers.to_array())
+  conn.send_response(resp.status, resp.reason, extra_headers=headers_map)
 
   // ボディを送信
   match resp.body {
