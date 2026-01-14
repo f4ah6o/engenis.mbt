@@ -13,5 +13,6 @@
     "server",
     "html"
   ],
-  "description": "Pure MoonBit Hypermedia Driven Application framework"
+  "description": "Pure MoonBit Hypermedia Driven Application framework",
+  "preferred-target":"native"
 }
