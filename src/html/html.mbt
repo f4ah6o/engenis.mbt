@@ -35,6 +35,30 @@ pub fn Attrs::add(self : Attrs, key : String, value : AttrValue) -> Attrs {
 }
 
 ///|
+/// 2つの Attrs をマージする（prefer の属性が優先）
+pub fn Attrs::merge(prefer : Attrs, fallback : Attrs) -> Attrs {
+  // prefer のキーを追跡
+  let prefer_keys = @hashmap.new()
+  for i = 0; i < prefer.attrs.length(); i = i + 1 {
+    let (key, _) = prefer.attrs[i]
+    prefer_keys.set(key, "marker")
+  }
+
+  // fallback の重複しない属性を収集
+  let mut unique_fallback = []
+  for i = 0; i < fallback.attrs.length(); i = i + 1 {
+    let (key, value) = fallback.attrs[i]
+    match prefer_keys.get(key) {
+      Some(_) => () // prefer に存在する場合はスキップ
+      None => unique_fallback = unique_fallback + [(key, value)]
+    }
+  }
+
+  // prefer + unique_fallback（順序を維持）
+  { attrs: prefer.attrs + unique_fallback }
+}
+
+///|
 pub fn Attrs::class(self : Attrs, name : String) -> Attrs {
   self.add("class", Str(name))
 }
@@ -57,6 +81,54 @@ pub fn Attrs::attr_type(self : Attrs, t : String) -> Attrs {
 ///|
 pub fn Attrs::name(self : Attrs, n : String) -> Attrs {
   self.add("name", Str(n))
+}
+
+///|
+/// Htmx属性: hx-get
+pub fn Attrs::hx_get(self : Attrs, url : String) -> Attrs {
+  self.add("hx-get", Str(url))
+}
+
+///|
+/// Htmx属性: hx-post
+pub fn Attrs::hx_post(self : Attrs, url : String) -> Attrs {
+  self.add("hx-post", Str(url))
+}
+
+///|
+/// Htmx属性: hx-put
+pub fn Attrs::hx_put(self : Attrs, url : String) -> Attrs {
+  self.add("hx-put", Str(url))
+}
+
+///|
+/// Htmx属性: hx-delete
+pub fn Attrs::hx_delete(self : Attrs, url : String) -> Attrs {
+  self.add("hx-delete", Str(url))
+}
+
+///|
+/// Htmx属性: hx-patch
+pub fn Attrs::hx_patch(self : Attrs, url : String) -> Attrs {
+  self.add("hx-patch", Str(url))
+}
+
+///|
+/// Htmx属性: hx-swap
+pub fn Attrs::hx_swap(self : Attrs, swap : String) -> Attrs {
+  self.add("hx-swap", Str(swap))
+}
+
+///|
+/// Htmx属性: hx-target
+pub fn Attrs::hx_target(self : Attrs, selector : String) -> Attrs {
+  self.add("hx-target", Str(selector))
+}
+
+///|
+/// Htmx属性: hx-trigger
+pub fn Attrs::hx_trigger(self : Attrs, event : String) -> Attrs {
+  self.add("hx-trigger", Str(event))
 }
 
 ///|
@@ -298,6 +370,78 @@ pub fn ElementBuilder::name(
   n : String,
 ) -> ElementBuilder {
   { ..self, attrs: self.attrs.name(n) }
+}
+
+///|
+/// Htmx属性: hx-get
+pub fn ElementBuilder::hx_get(
+  self : ElementBuilder,
+  url : String,
+) -> ElementBuilder {
+  { ..self, attrs: self.attrs.hx_get(url) }
+}
+
+///|
+/// Htmx属性: hx-post
+pub fn ElementBuilder::hx_post(
+  self : ElementBuilder,
+  url : String,
+) -> ElementBuilder {
+  { ..self, attrs: self.attrs.hx_post(url) }
+}
+
+///|
+/// Htmx属性: hx-put
+pub fn ElementBuilder::hx_put(
+  self : ElementBuilder,
+  url : String,
+) -> ElementBuilder {
+  { ..self, attrs: self.attrs.hx_put(url) }
+}
+
+///|
+/// Htmx属性: hx-delete
+pub fn ElementBuilder::hx_delete(
+  self : ElementBuilder,
+  url : String,
+) -> ElementBuilder {
+  { ..self, attrs: self.attrs.hx_delete(url) }
+}
+
+///|
+/// Htmx属性: hx-patch
+pub fn ElementBuilder::hx_patch(
+  self : ElementBuilder,
+  url : String,
+) -> ElementBuilder {
+  { ..self, attrs: self.attrs.hx_patch(url) }
+}
+
+///|
+/// Htmx属性: hx-swap
+pub fn ElementBuilder::hx_swap(
+  self : ElementBuilder,
+  swap : String,
+) -> ElementBuilder {
+  { ..self, attrs: self.attrs.hx_swap(swap) }
+}
+
+///|
+/// Htmx属性: hx-target
+pub fn ElementBuilder::hx_target(
+  self : ElementBuilder,
+  selector : String,
+) -> ElementBuilder {
+  { ..self, attrs: self.attrs.hx_target(selector) }
+}
+
+///|
+/// Htmx属性: hx-trigger
+pub fn ElementBuilder::hx_trigger(
+  self : ElementBuilder,
+  event : String,
+) -> ElementBuilder {
+  { ..self, attrs: self.attrs.hx_trigger(event) }
 }
 
 ///|

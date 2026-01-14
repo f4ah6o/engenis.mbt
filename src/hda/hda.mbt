@@ -258,51 +258,51 @@ pub fn HdaAttrs::new() -> HdaAttrs {
 }
 
 ///|
-pub fn HdaAttrs::get(self : HdaAttrs, url : String) -> HdaAttrs {
-  let new_attrs = @hashmap.from_array([("hx-get", url)])
+// 内部ヘルパー: 属性を追加して新しい HdaAttrs を返す
+fn HdaAttrs::_add(self : HdaAttrs, key : String, value : String) -> HdaAttrs {
+  let new_attrs = self.attrs.copy()
+  new_attrs.set(key, value)
   { attrs: new_attrs }
+}
+
+///|
+pub fn HdaAttrs::get(self : HdaAttrs, url : String) -> HdaAttrs {
+  self._add("hx-get", url)
 }
 
 ///|
 pub fn HdaAttrs::post(self : HdaAttrs, url : String) -> HdaAttrs {
-  let new_attrs = @hashmap.from_array([("hx-post", url)])
-  { attrs: new_attrs }
+  self._add("hx-post", url)
 }
 
 ///|
 pub fn HdaAttrs::put(self : HdaAttrs, url : String) -> HdaAttrs {
-  let new_attrs = @hashmap.from_array([("hx-put", url)])
-  { attrs: new_attrs }
+  self._add("hx-put", url)
 }
 
 ///|
 pub fn HdaAttrs::delete(self : HdaAttrs, url : String) -> HdaAttrs {
-  let new_attrs = @hashmap.from_array([("hx-delete", url)])
-  { attrs: new_attrs }
+  self._add("hx-delete", url)
 }
 
 ///|
 pub fn HdaAttrs::patch(self : HdaAttrs, url : String) -> HdaAttrs {
-  let new_attrs = @hashmap.from_array([("hx-patch", url)])
-  { attrs: new_attrs }
+  self._add("hx-patch", url)
 }
 
 ///|
 pub fn HdaAttrs::swap(self : HdaAttrs, s : Swap) -> HdaAttrs {
-  let new_attrs = @hashmap.from_array([("hx-swap", s.to_string())])
-  { attrs: new_attrs }
+  self._add("hx-swap", s.to_string())
 }
 
 ///|
 pub fn HdaAttrs::target(self : HdaAttrs, selector : String) -> HdaAttrs {
-  let new_attrs = @hashmap.from_array([("hx-target", selector)])
-  { attrs: new_attrs }
+  self._add("hx-target", selector)
 }
 
 ///|
 pub fn HdaAttrs::trigger(self : HdaAttrs, t : Trigger) -> HdaAttrs {
-  let new_attrs = @hashmap.from_array([("hx-trigger", t.to_string())])
-  { attrs: new_attrs }
+  self._add("hx-trigger", t.to_string())
 }
 
 ///|
@@ -312,42 +312,47 @@ pub fn HdaAttrs::on(self : HdaAttrs, event : String) -> HdaAttrs {
 
 ///|
 pub fn HdaAttrs::push_url(self : HdaAttrs, url : String) -> HdaAttrs {
-  let new_attrs = @hashmap.from_array([("hx-push-url", url)])
-  { attrs: new_attrs }
+  self._add("hx-push-url", url)
 }
 
 ///|
 pub fn HdaAttrs::confirm(self : HdaAttrs, message : String) -> HdaAttrs {
-  let new_attrs = @hashmap.from_array([("hx-confirm", message)])
-  { attrs: new_attrs }
+  self._add("hx-confirm", message)
 }
 
 ///|
 pub fn HdaAttrs::disable(self : HdaAttrs) -> HdaAttrs {
-  let new_attrs = @hashmap.from_array([("hx-disable", "true")])
-  { attrs: new_attrs }
+  self._add("hx-disable", "true")
 }
 
 ///|
 pub fn HdaAttrs::encoding(self : HdaAttrs, encoding : String) -> HdaAttrs {
-  let new_attrs = @hashmap.from_array([("hx-encoding", encoding)])
-  { attrs: new_attrs }
+  self._add("hx-encoding", encoding)
 }
 
 ///|
 pub fn HdaAttrs::headers(self : HdaAttrs, headers : String) -> HdaAttrs {
-  let new_attrs = @hashmap.from_array([("hx-headers", headers)])
-  { attrs: new_attrs }
+  self._add("hx-headers", headers)
 }
 
 ///|
 pub fn HdaAttrs::params(self : HdaAttrs, params : String) -> HdaAttrs {
-  let new_attrs = @hashmap.from_array([("hx-vals", params)])
-  { attrs: new_attrs }
+  self._add("hx-vals", params)
 }
 
 ///|
 pub fn HdaAttrs::boost(self : HdaAttrs) -> HdaAttrs {
-  let new_attrs = @hashmap.from_array([("hx-boost", "true")])
-  { attrs: new_attrs }
+  self._add("hx-boost", "true")
+}
+
+///|
+/// HdaAttrs を html.Attrs に変換
+pub fn HdaAttrs::to_html_attrs(self : HdaAttrs) -> @html.Attrs {
+  let entries = self.attrs.to_array()
+  let mut html_attrs = @html.Attrs::new()
+  for i = 0; i < entries.length(); i = i + 1 {
+    let (key, value) = entries[i]
+    html_attrs = html_attrs.add(key, @html.AttrValue::Str(value))
+  }
+  html_attrs
 }
