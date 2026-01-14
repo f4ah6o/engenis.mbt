@@ -1,0 +1,25 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "f4ah6o/engenis/src/router"
+
+import(
+  "moonbitlang/core/hashmap"
+)
+
+// Values
+
+// Errors
+
+// Types and methods
+pub(all) struct PathParams {
+  segments : @hashmap.HashMap[String, String]
+}
+pub fn PathParams::get(Self, String) -> String?
+pub fn PathParams::new() -> Self
+pub fn PathParams::require(Self, String) -> String raise
+pub fn PathParams::set(Self, String, String) -> Self
+pub impl Show for PathParams
+
+// Type aliases
+
+// Traits
+

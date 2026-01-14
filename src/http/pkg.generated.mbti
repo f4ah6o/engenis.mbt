@@ -1,0 +1,94 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "f4ah6o/engenis/src/http"
+
+import(
+  "moonbitlang/async/socket"
+  "moonbitlang/core/hashmap"
+)
+
+// Values
+pub async fn start_counter_server() -> Unit
+
+// Errors
+
+// Types and methods
+type Counter
+
+pub(all) enum Method {
+  Get
+  Head
+  Post
+  Put
+  Delete
+  Connect
+  Options
+  Trace
+  Patch
+}
+pub fn Method::from_async(@moonbitlang/async/http.RequestMethod) -> Self
+pub fn Method::to_async(Self) -> @moonbitlang/async/http.RequestMethod
+pub impl Compare for Method
+pub impl Eq for Method
+pub impl Hash for Method
+pub impl Show for Method
+pub impl ToJson for Method
+
+pub(all) struct Request {
+  mthd : Method
+  path : String
+  query : @hashmap.HashMap[String, String]
+  headers : @hashmap.HashMap[String, String]
+  body : Bytes
+}
+pub fn Request::from_async(@moonbitlang/async/http.Request) -> Self
+pub fn Request::get_method(Self) -> Method
+pub impl Show for Request
+
+pub(all) struct Response {
+  status : Int
+  reason : String
+  headers : @hashmap.HashMap[String, String]
+  body : ResponseBody
+}
+pub fn Response::bad_request() -> ResponseBuilder
+pub fn Response::created() -> ResponseBuilder
+pub fn Response::internal_error() -> ResponseBuilder
+pub fn Response::not_found() -> ResponseBuilder
+pub fn Response::ok() -> ResponseBuilder
+pub impl Show for Response
+
+pub(all) enum ResponseBody {
+  Empty
+  Text(String)
+  Bytes(Bytes)
+}
+pub impl Show for ResponseBody
+
+pub(all) struct ResponseBuilder {
+  status : Int
+  reason : String
+  headers : @hashmap.HashMap[String, String]
+}
+pub fn ResponseBuilder::bytes(Self, Bytes) -> Response
+pub fn ResponseBuilder::content_type(Self, String) -> Self
+pub fn ResponseBuilder::empty(Self) -> Response
+pub fn ResponseBuilder::header(Self, String, String) -> Self
+pub fn ResponseBuilder::new(Int, String) -> Self
+pub fn ResponseBuilder::text(Self, String) -> Response
+
+pub(all) struct Server {
+  inner_server : @moonbitlang/async/http.Server
+  handler_func : (Request) -> Response
+}
+pub fn Server::addr(Self) -> @socket.Addr
+pub fn Server::bind(String, (Request) -> Response) -> Self raise
+pub fn Server::close(Self) -> Unit
+pub fn Server::new(@socket.Addr, (Request) -> Response) -> Self raise
+pub async fn Server::run(Self) -> Unit
+pub async fn Server::run_forever(Self) -> Unit
+
+// Type aliases
+pub type Handler = (Request) -> Response
+
+// Traits
+

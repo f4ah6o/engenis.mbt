@@ -1,0 +1,99 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "f4ah6o/engenis/src/hda"
+
+import(
+  "f4ah6o/engenis/src/http"
+  "moonbitlang/core/hashmap"
+)
+
+// Values
+pub fn hda_response(String, swap? : Swap, target? : String) -> HdaResponseBuilder
+
+pub fn html_response(String) -> HdaResponseBuilder
+
+// Errors
+
+// Types and methods
+pub(all) struct HdaAttrs {
+  attrs : @hashmap.HashMap[String, String]
+}
+pub fn HdaAttrs::boost(Self) -> Self
+pub fn HdaAttrs::confirm(Self, String) -> Self
+pub fn HdaAttrs::delete(Self, String) -> Self
+pub fn HdaAttrs::disable(Self) -> Self
+pub fn HdaAttrs::encoding(Self, String) -> Self
+pub fn HdaAttrs::get(Self, String) -> Self
+pub fn HdaAttrs::headers(Self, String) -> Self
+pub fn HdaAttrs::new() -> Self
+pub fn HdaAttrs::on(Self, String) -> Self
+pub fn HdaAttrs::params(Self, String) -> Self
+pub fn HdaAttrs::patch(Self, String) -> Self
+pub fn HdaAttrs::post(Self, String) -> Self
+pub fn HdaAttrs::push_url(Self, String) -> Self
+pub fn HdaAttrs::put(Self, String) -> Self
+pub fn HdaAttrs::swap(Self, Swap) -> Self
+pub fn HdaAttrs::target(Self, String) -> Self
+pub fn HdaAttrs::trigger(Self, Trigger) -> Self
+
+pub(all) struct HdaResponseBuilder {
+  status : Int
+  reason : String
+  headers : @hashmap.HashMap[String, String]
+  body : String
+}
+pub fn HdaResponseBuilder::build(Self) -> @http.Response
+pub fn HdaResponseBuilder::header(Self, String, String) -> Self
+pub fn HdaResponseBuilder::html(Self, String) -> Self
+pub fn HdaResponseBuilder::new(Int, String) -> Self
+pub fn HdaResponseBuilder::push_url(Self, String) -> Self
+pub fn HdaResponseBuilder::redirect(Self, String) -> Self
+pub fn HdaResponseBuilder::replace_url(Self, String) -> Self
+pub fn HdaResponseBuilder::reswap(Self, Swap) -> Self
+pub fn HdaResponseBuilder::swap(Self, Swap) -> Self
+pub fn HdaResponseBuilder::target(Self, String) -> Self
+pub fn HdaResponseBuilder::trigger(Self, String) -> Self
+pub fn HdaResponseBuilder::trigger_after_settle(Self, String) -> Self
+pub fn HdaResponseBuilder::trigger_after_swap(Self, String) -> Self
+
+pub(all) enum Swap {
+  InnerHTML
+  OuterHTML
+  BeforeBegin
+  AfterBegin
+  BeforeEnd
+  AfterEnd
+  Delete
+  None
+}
+pub fn Swap::from_string(String) -> Self?
+pub fn Swap::to_string(Self) -> String
+pub impl Eq for Swap
+pub impl Show for Swap
+
+pub(all) enum Trigger {
+  Event(String)
+  EventWithMods(String, Array[TriggerMod])
+  Multiple(Array[Trigger])
+}
+pub fn Trigger::to_string(Self) -> String
+pub impl Show for Trigger
+
+pub(all) enum TriggerMod {
+  Once
+  Changed
+  Delay(Int)
+  Throttle(Int)
+  From(String)
+  Target(String)
+  Filter(String)
+  Consumed
+  Queue(String)
+}
+pub fn TriggerMod::to_string(Self) -> String
+pub impl Eq for TriggerMod
+pub impl Show for TriggerMod
+
+// Type aliases
+
+// Traits
+
