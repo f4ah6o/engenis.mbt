@@ -1,0 +1,12 @@
+{
+  "is-main": false,
+  "import": [
+    { "path": "moonbitlang/async", "alias": "async" },
+    { "path": "moonbitlang/async/http", "alias": "async_http" },
+    { "path": "moonbitlang/async/socket", "alias": "socket" },
+    { "path": "f4ah6o/engenis/src/http", "alias": "http" },
+    { "path": "f4ah6o/engenis/src/router", "alias": "router" },
+    { "path": "f4ah6o/engenis/src/html", "alias": "html" },
+    { "path": "f4ah6o/engenis/src/hda", "alias": "hda" }
+  ]
+}
