@@ -30,13 +30,61 @@ fn get_count() -> Int {
 }
 
 ///|
-/// メインページの HTML を構築
+/// メインページの HTML を構築（HTML DSL + HDA で型安全に構築）
 fn render_home_page() -> String {
   let count = get_count()
-  let count_str = count.to_string()
-  let part1 = "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF-8\"><title>Engenis Counter</title><script src=\"https://unpkg.com/htmx.org@1.9.10\"></script></head><body style=\"font-family: system-ui; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0;\"><div style=\"text-align: center;\"><h1>Engenis Counter</h1><p>Hypermedia Driven Application with MoonBit</p><div id=\"counter\" style=\"font-size: 48px; margin: 20px 0;\">"
-  let part2 = "</div><div style=\"gap: 10px; display: flex;\"><button hx-post=\"/counter/inc\" hx-target=\"#counter\" hx-swap=\"innerHTML\" style=\"font-size: 18px; padding: 10px 20px; cursor: pointer;\">+</button><button hx-post=\"/counter/dec\" hx-target=\"#counter\" hx-swap=\"innerHTML\" style=\"font-size: 18px; padding: 10px 20px; cursor: pointer;\">-</button></div></div></body></html>"
-  part1 + count_str + part2
+
+  @html.fragment([
+    @html.doctype(),
+    @html.html()
+      .attr("lang", @html.AttrValue::Str("en"))
+      .children([
+        @html.head()
+          .children([
+            @html.meta()
+              .attr("charset", @html.AttrValue::Str("UTF-8"))
+              .empty(),
+            @html.title()
+              .text("Engenis Counter"),
+            @html.script()
+              .attr("src", @html.AttrValue::Str("https://unpkg.com/htmx.org@1.9.10"))
+              .empty(),
+          ]),
+        @html.body()
+          .attr("style", @html.AttrValue::Str("font-family: system-ui; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0;"))
+          .children([
+            @html.div()
+              .attr("style", @html.AttrValue::Str("text-align: center;"))
+              .children([
+                @html.h1()
+                  .text("Engenis Counter"),
+                @html.p()
+                  .text("Hypermedia Driven Application with MoonBit"),
+                @html.div()
+                  .id("counter")
+                  .attr("style", @html.AttrValue::Str("font-size: 48px; margin: 20px 0;"))
+                  .text(count.to_string()),
+                @html.div()
+                  .attr("style", @html.AttrValue::Str("gap: 10px; display: flex;"))
+                  .children([
+                    @html.button()
+                      .hx_post("/counter/inc")
+                      .hx_target("#counter")
+                      .hx_swap_safe(@html.Swap::InnerHTML)
+                      .attr("style", @html.AttrValue::Str("font-size: 18px; padding: 10px 20px; cursor: pointer;"))
+                      .text("+"),
+                    @html.button()
+                      .hx_post("/counter/dec")
+                      .hx_target("#counter")
+                      .hx_swap_safe(@html.Swap::InnerHTML)
+                      .attr("style", @html.AttrValue::Str("font-size: 18px; padding: 10px 20px; cursor: pointer;"))
+                      .text("-"),
+                  ]),
+              ]),
+          ]),
+      ]),
+  ])
+    .render()
 }
 
 ///|
