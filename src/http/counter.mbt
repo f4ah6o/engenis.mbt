@@ -56,15 +56,19 @@ fn handler(req : Request) -> Response {
       .text(render_home_page())
     (_, "/counter/inc") => {
       let _new_count : Int = increment()
-      Response::ok()
-      .content_type("text/html; charset=utf-8")
-      .text(render_counter_value())
+      hda_response(
+        render_counter_value(),
+        swap=@html.Swap::InnerHTML,
+        target="#counter",
+      ).build()
     }
     (_, "/counter/dec") => {
       let _new_count2 : Int = decrement()
-      Response::ok()
-      .content_type("text/html; charset=utf-8")
-      .text(render_counter_value())
+      hda_response(
+        render_counter_value(),
+        swap=@html.Swap::InnerHTML,
+        target="#counter",
+      ).build()
     }
     (_, _) => Response::not_found().text("404 - Not Found")
   }
