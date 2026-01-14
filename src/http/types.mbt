@@ -132,8 +132,8 @@ pub fn ResponseBuilder::header(
   key : String,
   value : String,
 ) -> ResponseBuilder {
-  // 新しいマップを作成して値を設定
-  let new_headers = @hashmap.from_array([(key, value)])
+  let new_headers = self.headers.copy()
+  new_headers.set(key, value)
   { status: self.status, reason: self.reason, headers: new_headers }
 }
 
