@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Engenis Client POC</title>
+  </head>
+  <body>
+    <main>
+      <h1>Engenis Client POC</h1>
+      <p>Click to fetch a fragment and swap it into the target.</p>
+      <div id="target">(empty)</div>
+      <button hx-get="snippet.html" hx-target="#target" hx-swap="innerHTML">
+        Load Fragment
+      </button>
+    </main>
+    <script src="./app.js"></script>
+  </body>
+</html>
