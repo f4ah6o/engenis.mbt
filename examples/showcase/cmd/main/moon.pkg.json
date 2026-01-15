@@ -1,0 +1,15 @@
+{
+  "is_main": true,
+  "import": [
+    { "path": "f4ah6o/engenis/src/http" },
+    { "path": "f4ah6o/engenis/src/html" },
+    { "path": "f4ah6o/engenis/src/hda" },
+    { "path": "f4ah6o/engenis/src/router" },
+    { "path": "moonbitlang/async" }
+  ],
+  "warn-list": "-29",
+  "targets": {
+    "main.mbt": ["native"],
+    "main_js.mbt": ["js", "wasm", "wasm-gc"]
+  }
+}

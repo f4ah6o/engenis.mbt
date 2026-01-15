@@ -53,6 +53,13 @@ let inc_link = @hda.LinkRel::new(
 
 ブラウザで `http://127.0.0.1:8080` にアクセスしてください。
 
+```bash
+# Showcase demoを実行
+moon run examples/showcase/cmd/main
+```
+
+ブラウザで `http://127.0.0.1:8082` にアクセスしてください。
+
 ## Documentation
 
 * [spec/AGENTS.md](spec/AGENTS.md) - 開発方針

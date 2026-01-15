@@ -227,9 +227,9 @@ pub fn Trigger::to_string(self : Trigger) -> String {
   match self {
     Event(name) => name
     EventWithMods(name, mods) => {
-      let mod_str = mods.map(TriggerMod::to_string).join(", ")
+      let mod_str = mods.map(TriggerMod::to_string).join(" ")
       if mod_str.length() > 0 {
-        name + "[" + mod_str + "]"
+        name + " " + mod_str
       } else {
         name
       }
