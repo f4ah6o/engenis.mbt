@@ -30,7 +30,11 @@ pub fn apply_swap(swap : @html.Swap, target : Element, html : String) -> Unit {
   match swap {
     @html.Swap::OuterHTML => set_outer_html(target, html)
     @html.Swap::InnerHTML => set_inner_html(target, html)
-    // TODO: implement other swap strategies in the runtime.
-    _ => set_inner_html(target, html)
+    @html.Swap::BeforeBegin => insert_adjacent_html(target, "beforebegin", html)
+    @html.Swap::AfterBegin => insert_adjacent_html(target, "afterbegin", html)
+    @html.Swap::BeforeEnd => insert_adjacent_html(target, "beforeend", html)
+    @html.Swap::AfterEnd => insert_adjacent_html(target, "afterend", html)
+    @html.Swap::Delete => remove_element(target)
+    @html.Swap::None => ()
   }
 }

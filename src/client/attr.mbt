@@ -17,3 +17,8 @@ pub fn hx_target(el : Element) -> String? {
 pub fn hx_swap(el : Element) -> String? {
   get_attr_value(el, "hx-swap")
 }
+
+///|
+pub fn hx_trigger(el : Element) -> String? {
+  get_attr_value(el, "hx-trigger")
+}

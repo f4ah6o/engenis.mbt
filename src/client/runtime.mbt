@@ -7,24 +7,37 @@ fn resolve_target(doc : Document, el : Element, selector : String?) -> Element? 
 }
 
 ///|
+fn run_fetch(
+  doc : Document,
+  el : Element,
+  target_sel : String?,
+  swap : @html.Swap,
+  url : String,
+) -> Unit {
+  match resolve_target(doc, el, target_sel) {
+    Some(target) =>
+      fetch_text(url, fn(body) { apply_swap(swap, target, body) }, fn(msg) {
+        println("fetch failed: " + msg)
+      })
+    None => ()
+  }
+}
+
+///|
 fn bind_hx_get(doc : Document, el : Element) -> Unit {
   match hx_get(el) {
     None => ()
     Some(url) => {
       let target_sel = hx_target(el)
       let swap = parse_swap(hx_swap(el))
-      add_event_listener(el, "click", fn(ev) {
-        prevent_default(ev)
-        match resolve_target(doc, el, target_sel) {
-          Some(target) =>
-            fetch_text(url, fn(body) { apply_swap(swap, target, body) }, fn(
-              msg,
-            ) {
-              println("fetch failed: " + msg)
-            })
-          None => ()
-        }
-      })
+      match parse_trigger(hx_trigger(el)) {
+        Immediate => run_fetch(doc, el, target_sel, swap, url)
+        Event(event) =>
+          add_event_listener(el, event, fn(ev) {
+            prevent_default(ev)
+            run_fetch(doc, el, target_sel, swap, url)
+          })
+      }
     }
   }
 }

@@ -38,6 +38,18 @@ extern "js" fn set_outer_html(el : Element, html : String) -> Unit =
   #| (el, html) => { el.outerHTML = html; }
 
 ///|
+extern "js" fn insert_adjacent_html(
+  el : Element,
+  position : String,
+  html : String,
+) -> Unit =
+  #| (el, position, html) => { el.insertAdjacentHTML(position, html); }
+
+///|
+extern "js" fn remove_element(el : Element) -> Unit =
+  #| (el) => { el.remove(); }
+
+///|
 extern "js" fn add_event_listener(
   el : Element,
   name : String,
