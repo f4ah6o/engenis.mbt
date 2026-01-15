@@ -9,8 +9,8 @@ import {
 
 options(
   targets: {
-    "async_bridge_native.mbt": [ "native" ],
     "assets.mbt": [ "native" ],
+    "async_bridge_native.mbt": [ "native" ],
     "counter.mbt": [ "native" ],
     "server.mbt": [ "native" ],
   },

@@ -8,11 +8,11 @@ import {
 }
 
 options(
+  link: { },
   targets: {
     "async_bridge_native.mbt": [ "native" ],
     "counter.mbt": [ "native" ],
     "server.mbt": [ "native" ],
   },
   "warn-list": "-29",
-  link: { },
 )
