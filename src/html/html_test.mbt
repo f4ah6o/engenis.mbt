@@ -53,32 +53,28 @@ test "Attrs::id sets id attribute" {
 }
 
 ///|
-/// HTML エスケープのテスト - 既知のバグにより現在スキップ
-// TODO: escape_html の to_bytes() バグ修正後に有効化
-// test "Html::render escapes < and >" {
-//   let html = @html.div().text("<test>").render()
-//   assert_true(html.contains("&lt;test&gt;"))
-// }
+/// HTML エスケープのテスト
+test "Html::render escapes < and >" {
+  let html = @html.div().text("<test>").render()
+  assert_true(html.contains("&lt;test&gt;"))
+}
 
 ///|
-/// HTML エスケープのテスト - 既知のバグにより現在スキップ
-// TODO: escape_html の to_bytes() バグ修正後に有効化
-// test "Html::render escapes &" {
-//   let html = @html.div().text("a & b").render()
-//   assert_true(html.contains("a &amp; b"))
-// }
+/// HTML エスケープのテスト
+test "Html::render escapes &" {
+  let html = @html.div().text("a & b").render()
+  assert_true(html.contains("a &amp; b"))
+}
 
 ///|
-/// HTML エスケープのテスト - 既知のバグにより現在スキップ
-// TODO: escape_html の to_bytes() バグ修正後に有効化
-// test "Html::render escapes quotes in text" {
-//   let html = @html.div().text("\"test\"").render()
-//   assert_true(html.contains("&quot;test&quot;"))
-// }
+/// HTML エスケープのテスト
+test "Html::render escapes quotes in text" {
+  let html = @html.div().text("\"test\"").render()
+  assert_true(html.contains("&quot;test&quot;"))
+}
 
 ///|
 /// ElementBuilder は単純な要素をレンダリングする
-// Note: 既知のバグにより UTF-8 文字の処理に問題があるため ASCII のみテスト
 test "ElementBuilder renders simple element" {
   let html = @html.div().text("Hi").render()
   // 開始タグと終了タグを含むことを確認
@@ -151,4 +147,30 @@ test "Swap::to_string returns correct values" {
   assert_eq(@html.Swap::AfterEnd.to_string(), "afterend")
   assert_eq(@html.Swap::Delete.to_string(), "delete")
   assert_eq(@html.Swap::None.to_string(), "none")
+}
+
+///|
+/// UTF-8文字が正しくレンダリングされる
+test "Html::render preserves UTF-8 characters" {
+  let html = @html.div().text("こんにちは").render()
+  assert_true(html.contains("こんにちは"))
+}
+
+///|
+/// UTF-8文字と特殊文字のエスケープが正しく行われる
+test "Html::render escapes special chars in UTF-8 text" {
+  let html = @html.div().text("<日本語> & \"テスト\"").render()
+  assert_true(html.contains("&lt;日本語&gt;"))
+  assert_true(html.contains("&amp;"))
+  assert_true(html.contains("&quot;テスト&quot;"))
+}
+
+///|
+/// 属性値でのUTF-8文字と特殊文字のエスケープ
+test "Html::render escapes attribute values with UTF-8" {
+  let html = @html.div()
+    .attr("data-test", @html.AttrValue::Str("<val>&\"test"))
+    .text("x")
+    .render()
+  assert_true(html.contains("data-test=\"&lt;val&gt;&amp;&quot;test\""))
 }

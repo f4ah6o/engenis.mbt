@@ -249,60 +249,58 @@ pub(all) enum Html {
 } derive(Show)
 
 ///|
-/// HTMLエスケープ
-fn escape_html_char(ch : Int) -> String {
-  match ch {
-    38 => "&amp;" // &
-    60 => "&lt;" // <
-    62 => "&gt;" // >
-    34 => "&quot;" // "
-    39 => "&#39;" // '
-    _ => {
-      let char_opt = ch.to_char()
-      match char_opt {
-        Some(c) => String::from_array([c])
-        None => ""
-      }
-    }
-  }
-}
-
-///|
+/// HTMLエスケープ（文字単位処理・UTF-8対応）
 fn escape_html(s : String) -> String {
-  let mut result = ""
-  let bytes = @encoding/utf8.encode(s)
-  for i = 0; i < bytes.length(); i = i + 1 {
-    result = result + escape_html_char(bytes[i].to_int())
-  }
-  result
-}
-
-///|
-/// 属性値エスケープ
-fn escape_attr_char(ch : Int) -> String {
-  match ch {
-    38 => "&amp;" // &
-    34 => "&quot;" // "
-    60 => "&lt;" // <
-    62 => "&gt;" // >
-    _ => {
-      let char_opt = ch.to_char()
-      match char_opt {
-        Some(c) => String::from_array([c])
-        None => ""
-      }
+  let mut result : Array[String] = []
+  let len = s.length()
+  for i = 0; i < len; i = i + 1 {
+    let uint = s[i]
+    let code = uint.to_int()
+    match code {
+      38 => result = result + ["&amp;"] // &
+      60 => result = result + ["&lt;"] // <
+      62 => result = result + ["&gt;"] // >
+      34 => result = result + ["&quot;"] // "
+      39 => result = result + ["&#39;"] // '
+      _ =>
+        // UInt16(Char)をStringに変換
+        match uint.to_char() {
+          Some(ch) => {
+            let char_str = String::from_array([ch])
+            result = result + [char_str]
+          }
+          None => result = result + [""]
+        }
     }
   }
+  result.join("")
 }
 
 ///|
+/// 属性値エスケープ（文字単位処理・UTF-8対応）
 fn escape_attr(s : String) -> String {
-  let mut result = ""
-  let bytes = @encoding/utf8.encode(s)
-  for i = 0; i < bytes.length(); i = i + 1 {
-    result = result + escape_attr_char(bytes[i].to_int())
+  let mut result : Array[String] = []
+  let len = s.length()
+  for i = 0; i < len; i = i + 1 {
+    let uint = s[i]
+    let code = uint.to_int()
+    match code {
+      38 => result = result + ["&amp;"] // &
+      34 => result = result + ["&quot;"] // "
+      60 => result = result + ["&lt;"] // <
+      62 => result = result + ["&gt;"] // >
+      _ =>
+        // UInt16(Char)をStringに変換
+        match uint.to_char() {
+          Some(ch) => {
+            let char_str = String::from_array([ch])
+            result = result + [char_str]
+          }
+          None => result = result + [""]
+        }
+    }
   }
-  result
+  result.join("")
 }
 
 ///|
