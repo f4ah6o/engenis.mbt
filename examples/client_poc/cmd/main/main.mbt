@@ -1,5 +1,5 @@
 ///|
-/// Minimal client runtime POC entrypoint.
+/// Minimal htmx.mbt runtime entrypoint.
 fn main {
-  @client.start()
+  @htmx.htmx_init()
 }

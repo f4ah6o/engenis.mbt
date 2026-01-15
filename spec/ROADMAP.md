@@ -17,18 +17,18 @@ Pure MoonBit / dependency near 0 を守りつつ、HATEOAS と HDA beyond htmx.j
   - ルート/リンク/属性/レスポンスの文字列依存を最小化
 - HATEOAS & HDA beyond htmx.js
   - Full HTML swap を維持しつつ、型で遷移を保証
-- クライアント依存は最小、CDNは暫定
+- クライアント依存は最小、CDNは排除（ローカル配布）
 
 ## Current Snapshot
 
 - 型安全HTML DSL / HDA属性 / Rel + Route が存在
 - HTTPサーバーは `moonbitlang/async` のみ
-- counter example はHTMX CDN依存
+- counter example はローカル htmx.mbt ランタイム
 - 未実装/ギャップ
   - Request解析、ルートマッチング/params抽出
   - HdaAttrs の stringly typed
   - HTML/Attr エスケープのテスト無効
-  - Pure MoonBitクライアントランタイム未実装
+  - DOM非依存クライアントコア未実装
 
 ## Roadmap
 
@@ -54,11 +54,10 @@ Pure MoonBit / dependency near 0 を守りつつ、HATEOAS と HDA beyond htmx.j
 - Resource -> Actions 生成API
 - Done: 遷移が型で表現でき、文字列依存が消える
 
-### Phase 3: Pure MoonBit Client Runtime (HTMX依存排除)
+### Phase 3: MoonBit Client Runtime (htmx.mbt運用)
 
-- hx属性パーサ、イベントバインド、fetch、swap、HX-* header処理
-- JS/Wasm ターゲットの最小実装
-- counter example からHTMX削除
+- htmx.mbt ランタイムのローカル配布（assets/htmx.js）
+- counter example から CDN 削除
 - Done: CDN不要で example が動作
 
 ### Phase 4: Beyond HTMX (型駆動の拡張)

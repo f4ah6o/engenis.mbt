@@ -18,17 +18,9 @@ priv struct Card {
 }
 
 ///|
-priv enum MetricsMode {
-  Manual
-  NearRealtime
-  Realtime
-} derive(Eq)
-
-///|
 priv struct Board {
   mut pulses : Int
   mut cards : Array[Card]
-  mut metrics_mode : MetricsMode
   mut story_open : Bool
 }
 
@@ -82,12 +74,7 @@ fn build_cards() -> Array[Card] {
 }
 
 ///|
-let board : Board = {
-  pulses: 0,
-  cards: build_cards(),
-  metrics_mode: MetricsMode::NearRealtime,
-  story_open: false,
-}
+let board : Board = { pulses: 0, cards: build_cards(), story_open: false }
 
 ///|
 fn stage_index(stage : Int) -> Int {
@@ -138,42 +125,6 @@ fn stage_class(stage : Int) -> String {
 }
 
 ///|
-fn metrics_mode_label(mode : MetricsMode) -> String {
-  match mode {
-    MetricsMode::Manual => "Manual"
-    MetricsMode::NearRealtime => "Near realtime"
-    MetricsMode::Realtime => "Realtime"
-  }
-}
-
-///|
-fn metrics_mode_note(mode : MetricsMode) -> String {
-  match mode {
-    MetricsMode::Manual => "Refresh mode: Manual (click metrics)"
-    MetricsMode::NearRealtime => "Refresh mode: Near realtime (auto every 5s)"
-    MetricsMode::Realtime => "Refresh mode: Realtime (auto every 1s)"
-  }
-}
-
-///|
-fn metrics_trigger_value(mode : MetricsMode) -> String {
-  match mode {
-    MetricsMode::Manual => "click"
-    MetricsMode::NearRealtime => "load, every 5s"
-    MetricsMode::Realtime => "load, every 1s"
-  }
-}
-
-///|
-fn metrics_mode_slug(mode : MetricsMode) -> String {
-  match mode {
-    MetricsMode::Manual => "manual"
-    MetricsMode::NearRealtime => "near"
-    MetricsMode::Realtime => "realtime"
-  }
-}
-
-///|
 fn find_card_index(id : Int) -> Int? {
   for i = 0; i < board.cards.length(); i = i + 1 {
     if board.cards[i].id == id {
@@ -216,21 +167,6 @@ fn parse_card_id(path : String) -> Int? {
     match parsed {
       Ok(id) => Some(id)
       Err(_) => None
-    }
-  } else {
-    None
-  }
-}
-
-///|
-fn parse_metrics_mode(path : String) -> MetricsMode? {
-  let parts = path.split("/").to_array().map(part => part.to_string())
-  if parts.length() == 4 && parts[1] == "metrics" && parts[2] == "mode" {
-    match parts[3] {
-      "realtime" => Some(MetricsMode::Realtime)
-      "near" => Some(MetricsMode::NearRealtime)
-      "manual" => Some(MetricsMode::Manual)
-      _ => None
     }
   } else {
     None
@@ -725,28 +661,7 @@ fn render_metrics() -> @html.Html {
 }
 
 ///|
-fn metrics_mode_button(mode : MetricsMode) -> @html.Html {
-  let slug = metrics_mode_slug(mode)
-  let link = @hda.LinkRel::new(
-      @hda.Rel::namespaced("metrics", slug),
-      @router.Route::post("/metrics/mode/" + slug),
-    )
-    .target("#metrics-panel")
-    .swap(@html.Swap::OuterHTML)
-  let class_name = if board.metrics_mode == mode {
-    "mode-btn active"
-  } else {
-    "mode-btn"
-  }
-  @html.button()
-  .attrs(link.to_attrs())
-  .class(class_name)
-  .text(metrics_mode_label(mode))
-}
-
-///|
 fn render_metrics_panel() -> @html.Html {
-  let trigger_value = metrics_trigger_value(board.metrics_mode)
   @html.section()
   .id("metrics-panel")
   .class("panel metrics")
@@ -758,20 +673,15 @@ fn render_metrics_panel() -> @html.Html {
       .class("panel-title")
       .children([
         @html.h2().text("Metrics"),
-        @html.small().class("muted").text(metrics_mode_note(board.metrics_mode)),
-      ]),
-      @html.div()
-      .class("mode-toggles")
-      .children([
-        metrics_mode_button(MetricsMode::Realtime),
-        metrics_mode_button(MetricsMode::NearRealtime),
-        metrics_mode_button(MetricsMode::Manual),
+        @html.small()
+        .class("muted")
+        .text("Refresh mode: Manual (click metrics)"),
       ]),
     ]),
     @html.div()
     .id("metrics")
     .hx_get("/metrics")
-    .hx_trigger(trigger_value)
+    .hx_trigger("click")
     .hx_target("#metrics")
     .hx_swap_safe(@html.Swap::InnerHTML)
     .children([render_metrics()]),
@@ -946,7 +856,7 @@ fn render_page() -> String {
         @html.title().text("Engenis Showcase"),
         @html.style().child(@html.raw(render_css())),
         @html.script()
-        .attr("src", @html.AttrValue::Str("https://unpkg.com/htmx.org@1.9.10"))
+        .attr("src", @html.AttrValue::Str("/assets/htmx.js"))
         .empty(),
       ]),
       @html.body().children([
@@ -1052,71 +962,73 @@ fn handle_dynamic(req : @http.Request) -> @http.Response {
 }
 
 ///|
-fn handler(req : @http.Request) -> @http.Response {
-  match (req.mthd, req.path) {
-    (@http.Method::Get, "/") =>
-      @http.Response::ok()
-      .content_type("text/html; charset=utf-8")
-      .text(render_page())
-    (@http.Method::Get, "/metrics") =>
-      @http.Response::ok()
-      .content_type("text/html; charset=utf-8")
-      .text(render_metrics().render())
-    (@http.Method::Get, "/story") =>
-      @http.Response::ok()
-      .content_type("text/html; charset=utf-8")
-      .text(render_story().render())
-    (@http.Method::Post, "/story/toggle") => {
-      toggle_story()
-      @http.hda_response(
-        render_story_panel().render(),
-        swap=@html.Swap::OuterHTML,
-        target="#story-panel",
-      )
-      .trigger("story-toggle")
-      .build()
+fn handler(runtime_js : Bytes?, req : @http.Request) -> @http.Response {
+  if req.path == "/assets/htmx.js" {
+    match runtime_js {
+      Some(js) =>
+        @http.Response::ok()
+        .content_type("application/javascript; charset=utf-8")
+        .bytes(js)
+      None => @http.Response::not_found().text("Missing assets/htmx.js")
     }
-    (@http.Method::Post, "/board/reset") => {
-      reset_board()
-      @http.hda_response(
-        render_board().render(),
-        swap=@html.Swap::OuterHTML,
-        target="#board",
-      )
-      .trigger("board-reset")
-      .build()
-    }
-    (@http.Method::Post, "/pulse") => {
-      let _ = bump_pulse()
-      @http.hda_response(
-        render_pulse().render(),
-        swap=@html.Swap::InnerHTML,
-        target="#pulse",
-      )
-      .trigger_after_settle("pulse")
-      .build()
-    }
-    (@http.Method::Post, path) =>
-      match parse_metrics_mode(path) {
-        Some(mode) => {
-          board.metrics_mode = mode
-          @http.hda_response(
-            render_metrics_panel().render(),
-            swap=@html.Swap::OuterHTML,
-            target="#metrics-panel",
-          )
-          .trigger("metrics-mode")
-          .build()
-        }
-        None => handle_dynamic(req)
+  } else {
+    match (req.mthd, req.path) {
+      (@http.Method::Get, "/") =>
+        @http.Response::ok()
+        .content_type("text/html; charset=utf-8")
+        .text(render_page())
+      (@http.Method::Get, "/metrics") =>
+        @http.Response::ok()
+        .content_type("text/html; charset=utf-8")
+        .text(render_metrics().render())
+      (@http.Method::Get, "/story") =>
+        @http.Response::ok()
+        .content_type("text/html; charset=utf-8")
+        .text(render_story().render())
+      (@http.Method::Post, "/story/toggle") => {
+        toggle_story()
+        @http.hda_response(
+          render_story_panel().render(),
+          swap=@html.Swap::OuterHTML,
+          target="#story-panel",
+        )
+        .trigger("story-toggle")
+        .build()
       }
-    (_, _) => handle_dynamic(req)
+      (@http.Method::Post, "/board/reset") => {
+        reset_board()
+        @http.hda_response(
+          render_board().render(),
+          swap=@html.Swap::OuterHTML,
+          target="#board",
+        )
+        .trigger("board-reset")
+        .build()
+      }
+      (@http.Method::Post, "/pulse") => {
+        let _ = bump_pulse()
+        @http.hda_response(
+          render_pulse().render(),
+          swap=@html.Swap::InnerHTML,
+          target="#pulse",
+        )
+        .trigger_after_settle("pulse")
+        .build()
+      }
+      (_, _) => handle_dynamic(req)
+    }
   }
 }
 
 ///|
 async fn start_showcase_server() -> Unit {
-  let server = @http.Server::bind("127.0.0.1:8082", handler) catch {
+  let runtime_js = @http.load_asset_bytes("assets/htmx.js")
+  if runtime_js is None {
+    println("Warning: assets/htmx.js not found. Build the client runtime.")
+  }
+  let server = @http.Server::bind("127.0.0.1:8082", fn(req) {
+    handler(runtime_js, req)
+  }) catch {
     _err => {
       println("Failed to create server")
       return

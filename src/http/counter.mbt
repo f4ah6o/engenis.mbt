@@ -10,6 +10,9 @@ priv struct Counter {
 let counter : Counter = { value: 0 }
 
 ///|
+let htmx_asset_path = "assets/htmx.js"
+
+///|
 /// カウンターをインクリメント
 fn increment() -> Int {
   counter.value = counter.value + 1
@@ -53,11 +56,8 @@ fn render_home_page() -> String {
       @html.head().children([
         @html.meta().attr("charset", @html.AttrValue::Str("UTF-8")).empty(),
         @html.title().text("Engenis Counter"),
-        // TEMPORARY: HTMX is used as a client-side dependency during development.
-        // This will be replaced with a Pure MoonBit client runtime in the future.
-        // See: spec/CLIENT_DEPENDENCY.md
         @html.script()
-        .attr("src", @html.AttrValue::Str("https://unpkg.com/htmx.org@1.9.10"))
+        .attr("src", @html.AttrValue::Str("/assets/htmx.js"))
         .empty(),
       ]),
       @html.body()
@@ -117,8 +117,16 @@ fn render_counter_value() -> String {
 
 ///|
 /// ハンドラー関数
-fn handler(req : Request) -> Response {
+fn handler(runtime_js : Bytes?, req : Request) -> Response {
   match (req.mthd, req.path) {
+    (_, "/assets/htmx.js") =>
+      match runtime_js {
+        Some(js) =>
+          Response::ok()
+          .content_type("application/javascript; charset=utf-8")
+          .bytes(js)
+        None => Response::not_found().text("Missing assets/htmx.js")
+      }
     (_, "/") =>
       Response::ok()
       .content_type("text/html; charset=utf-8")
@@ -146,7 +154,13 @@ fn handler(req : Request) -> Response {
 ///|
 /// カウンターサーバーを起動
 pub async fn start_counter_server() -> Unit {
-  let server = Server::bind("127.0.0.1:8080", handler) catch {
+  let runtime_js = load_asset_bytes(htmx_asset_path)
+  if runtime_js is None {
+    println("Warning: assets/htmx.js not found. Build the client runtime.")
+  }
+  let server = Server::bind("127.0.0.1:8080", fn(req) {
+    handler(runtime_js, req)
+  }) catch {
     _err => {
       println("Failed to create server")
       return

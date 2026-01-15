@@ -10,7 +10,7 @@ Pure MoonBit Hypermedia Driven Application (HDA) framework
 
 ### 依存最小化 (Minimize Dependencies)
 
-クライアント側の依存関係を最小限に抑えることを目指しています。現在、counter exampleではHTMXをCDNから読み込んでいますが、これは開発中の一時的な措置です。詳細は [spec/CLIENT_DEPENDENCY.md](spec/CLIENT_DEPENDENCY.md) を参照してください。
+クライアント側の依存関係を最小限に抑えることを目指しています。現在はMoonBit実装の `htmx.mbt` をローカル配布し、CDN依存を排除しています。詳細は [spec/CLIENT_DEPENDENCY.md](spec/CLIENT_DEPENDENCY.md) を参照してください。
 
 ### Full HTML Swap but Type Safe
 
@@ -42,11 +42,15 @@ let inc_link = @hda.LinkRel::new(
 * [x] Type-safe HTML DSL
 * [x] Type-safe HDA attributes
 * [x] HTTP server (Pure MoonBit + moonbitlang/async)
-* [ ] Pure MoonBit client runtime (planned)
+* [x] MoonBit htmx runtime (js target, local asset)
+* [ ] DOM非依存クライアントコア (far future)
 
 ## Quick Start
 
 ```bash
+# Client runtime JSを生成
+make client-runtime
+
 # Counter exampleを実行
 ./examples/counter/cmd/main/main
 ```

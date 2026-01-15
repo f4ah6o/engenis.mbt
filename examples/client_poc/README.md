@@ -1,20 +1,26 @@
 # Client Runtime POC
 
-This example validates a minimal client runtime:
-- binds click events on `hx-get`
-- fetches a fragment
-- swaps `innerHTML` into a target
+This example bundles the `htmx.mbt` runtime:
+- initializes `@htmx.htmx_init()`
+- handles `hx-get` + `hx-target` + `hx-swap` interactions
 
 ## Build
+
+```bash
+make client-runtime
+```
+
+Or manually:
 
 ```bash
 moon build --target js examples/client_poc/cmd/main
 ```
 
-Copy the generated bundle to `examples/client_poc/app.js`:
+Copy the generated bundle to `examples/client_poc/app.js` and `assets/htmx.js`:
 
 ```bash
 cp target/js/release/build/examples/client_poc/cmd/main/main.js examples/client_poc/app.js
+cp target/js/release/build/examples/client_poc/cmd/main/main.js assets/htmx.js
 ```
 
 If the output path changes, locate it with:
@@ -22,6 +28,7 @@ If the output path changes, locate it with:
 ```bash
 JS_OUT=$(rg --files -g '*.js' target/js | rg 'client_poc' | head -n 1)
 cp "$JS_OUT" examples/client_poc/app.js
+cp "$JS_OUT" assets/htmx.js
 ```
 
 ## Run

@@ -8,9 +8,10 @@ This demo highlights:
 ## Run
 
 ```bash
+make client-runtime
 moon run examples/showcase/cmd/main
 ```
 
 Open `http://127.0.0.1:8082` in your browser.
 
-Note: this demo loads HTMX from a CDN as a temporary client runtime.
+Note: this demo serves `assets/htmx.js` built from `htmx.mbt`.

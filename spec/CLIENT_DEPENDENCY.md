@@ -4,15 +4,17 @@
 
 ### HTMX Usage
 
-counter example (`examples/counter`) では、HTMXをCDNから読み込んで使用しています。
+counter example (`examples/counter`) では、MoonBit実装の `htmx.mbt` を
+ローカル配布したランタイム（`assets/htmx.js`）を読み込んで使用しています。
 
 ```moonbit
 @html.script()
-  .attr("src", @html.AttrValue::Str("https://unpkg.com/htmx.org@1.9.10"))
+  .attr("src", @html.AttrValue::Str("/assets/htmx.js"))
   .empty(),
 ```
 
-これは開発中の一時的な措置であり、将来的にはPure MoonBitのクライアントランタイムに置き換える予定です。
+ランタイムは `examples/client_poc/cmd/main` で `@htmx.htmx_init()` を呼び出す
+JSバンドルとして生成します（`make client-runtime`）。
 
 ## Policy: 依存最小化
 
@@ -30,12 +32,12 @@ counter example (`examples/counter`) では、HTMXをCDNから読み込んで使
 
 これらはすでに型安全性を提供しており、クライアントランタイムへの移行が容易な設計になっています。
 
-## Future Work: Pure MoonBit Client Runtime
+## Future Work: DOM非依存クライアントコア
 
 ### Design Goals
 
 * HTMXと同じ属性形式（`hx-get`, `hx-post` など）をサポート
-* MoonBitのJS/Wasmターゲットで動作
+* DOM依存部をアダプタ化し、JS/Wasm/Native への展開余地を作る
 * サーバーサイドのHTML DSLと完全な互換性
 
 ### Planned Features
@@ -56,14 +58,13 @@ counter example (`examples/counter`) では、HTMXをCDNから読み込んで使
 
 ### Current Limitations
 
-* MoonBitのJS/WasmターゲットでのDOM操作はまだ実験的
-* ブラウザAPIとの相互運用性に関するドキュメントが不足
+* `htmx.mbt` ランタイムはJSターゲット前提
+* DOM非依存コアは未設計
 
 ### Next Steps
 
-1. MoonBitのJS/WasmターゲットでのDOM操作の調査
-2. `src/client/runtime.mbt` の設計と実装
-3. counter example のPure MoonBit化
+1. `htmx.mbt` ランタイムの運用とHDA属性との整合維持
+2. DOM非依存コア + アダプタ設計の検討（far future）
 
 ## References
 

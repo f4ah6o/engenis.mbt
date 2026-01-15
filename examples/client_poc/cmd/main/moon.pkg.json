@@ -1,6 +1,9 @@
 {
   "is_main": true,
   "import": [
-    { "path": "f4ah6o/engenis/src/client", "alias": "client" }
-  ]
+    { "path": "f4ah6o/htmx/src/htmx", "alias": "htmx" }
+  ],
+  "targets": {
+    "main.mbt": ["js", "wasm", "wasm-gc"]
+  }
 }

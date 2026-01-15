@@ -10,6 +10,8 @@ import(
 // Values
 pub fn hda_response(String, swap? : @html.Swap, target? : String) -> HdaResponseBuilder
 
+pub async fn load_asset_bytes(String) -> Bytes?
+
 pub async fn start_counter_server() -> Unit
 
 // Errors
