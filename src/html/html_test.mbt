@@ -174,3 +174,125 @@ test "Html::render escapes attribute values with UTF-8" {
     .render()
   assert_true(html.contains("data-test=\"&lt;val&gt;&amp;&quot;test\""))
 }
+
+///|
+/// Swap::from_string は正しい値をパースする
+test "Swap::from_string parses valid values" {
+  assert_eq(@html.Swap::from_string("innerHTML"), @html.Swap::InnerHTML)
+  assert_eq(@html.Swap::from_string("outerHTML"), @html.Swap::OuterHTML)
+  assert_eq(@html.Swap::from_string("beforebegin"), @html.Swap::BeforeBegin)
+  assert_eq(@html.Swap::from_string("afterbegin"), @html.Swap::AfterBegin)
+  assert_eq(@html.Swap::from_string("beforeend"), @html.Swap::BeforeEnd)
+  assert_eq(@html.Swap::from_string("afterend"), @html.Swap::AfterEnd)
+  assert_eq(@html.Swap::from_string("delete"), @html.Swap::Delete)
+  assert_eq(@html.Swap::from_string("none"), @html.Swap::None)
+}
+
+///|
+/// Swap::from_string は無効な値に対して None を返す
+test "Swap::from_string returns None for invalid values" {
+  assert_eq(@html.Swap::from_string("invalid"), @html.Swap::None)
+  assert_eq(@html.Swap::from_string(""), @html.Swap::None)
+}
+
+///|
+/// PBT: Swap round-trip - to_string と from_string は可逆である
+test "pbt swap round-trip" {
+  let swaps = [
+    @html.Swap::InnerHTML,
+    @html.Swap::OuterHTML,
+    @html.Swap::BeforeBegin,
+    @html.Swap::AfterBegin,
+    @html.Swap::BeforeEnd,
+    @html.Swap::AfterEnd,
+    @html.Swap::Delete,
+    @html.Swap::None,
+  ]
+  for i = 0; i < swaps.length(); i = i + 1 {
+    let original = swaps[i]
+    let str = original.to_string()
+    let parsed = @html.Swap::from_string(str)
+    assert_eq(parsed, original)
+  }
+}
+
+///|
+/// PBT: escape_html は特殊文字をエスケープする
+test "pbt escape_html escapes special characters" {
+  let rendered = @html.div().text("<test>&").render()
+  // < がエスケープされている
+  assert_true(rendered.contains("&lt;"), msg="should escape <")
+  // & がエスケープされている
+  assert_true(rendered.contains("&amp;"), msg="should escape &")
+  // 生の < が含まれていない
+  assert_true(!rendered.contains("<test>"), msg="should not contain raw <test>")
+}
+
+///|
+/// PBT: escape_html は UTF-8 文字を保持する
+test "pbt escape_html preserves UTF-8" {
+  // 日本語が保持される
+  let ja = @html.div().text("こんにちは").render()
+  assert_true(ja.contains("こんにちは"), msg="should preserve Japanese")
+
+  // 混合コンテンツでエスケープが正しく動作する
+  let mixed = @html.div().text("こんにちは<a>&test").render()
+  assert_true(mixed.contains("こんにちは"), msg="should preserve Japanese in mixed")
+  assert_true(mixed.contains("&lt;"), msg="should escape < in mixed")
+  assert_true(mixed.contains("&amp;"), msg="should escape & in mixed")
+
+  // 日本語を含むタグも正しくエスケープされる
+  let ja_tag = @html.div().text("<日本語>&").render()
+  assert_true(ja_tag.contains("日本語"), msg="should preserve Japanese in tag")
+  assert_true(ja_tag.contains("&lt;日本語&gt;"), msg="should escape tags with Japanese")
+  assert_true(ja_tag.contains("&amp;"), msg="should escape & with Japanese")
+}
+
+///|
+/// PBT: escape_html は quote をエスケープする
+test "pbt escape_html escapes quotes" {
+  let test_cases = [
+    "\"test\"",
+    "'test'",
+    "\"日本語\"",
+    "'<test>'",
+  ]
+
+  for i = 0; i < test_cases.length(); i = i + 1 {
+    let s = test_cases[i]
+    let rendered = @html.div().text(s).render()
+    // " がエスケープされている
+    if s.contains("\"") {
+      assert_true(rendered.contains("&quot;"), msg="should escape \"")
+    }
+    // ' がエスケープされている
+    if s.contains("'") {
+      assert_true(rendered.contains("&#39;"), msg="should escape '")
+    }
+  }
+}
+
+///|
+/// PBT: Swap の文字列が一意である
+test "pbt swap strings are unique" {
+  let swaps = [
+    @html.Swap::InnerHTML,
+    @html.Swap::OuterHTML,
+    @html.Swap::BeforeBegin,
+    @html.Swap::AfterBegin,
+    @html.Swap::BeforeEnd,
+    @html.Swap::AfterEnd,
+    @html.Swap::Delete,
+    @html.Swap::None,
+  ]
+
+  let seen : @hashmap.HashMap[String, String] = @hashmap.new()
+
+  for i = 0; i < swaps.length(); i = i + 1 {
+    let str = swaps[i].to_string()
+    match seen.get(str) {
+      Some(_) => assert_true(false, msg="duplicate string")
+      None => seen.set(str, "seen")
+    }
+  }
+}

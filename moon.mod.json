@@ -5,6 +5,9 @@
     "moonbitlang/async": "0.16.1",
     "f4ah6o/htmx": "0.2.0"
   },
+  "test-deps": {
+    "moonbitlang/quickcheck": "0.9.9"
+  },
   "readme": "README.mbt.md",
   "repository": "",
   "license": "Apache-2.0",
