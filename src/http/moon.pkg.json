@@ -6,6 +6,7 @@
     { "path": "f4ah6o/engenis/src/hda", "alias": "hda" },
     { "path": "f4ah6o/engenis/src/router", "alias": "router" }
   ],
+  "warn-list": "-29",
   "targets": {
     "async_bridge_native.mbt": ["native"],
     "server.mbt": ["native"],
