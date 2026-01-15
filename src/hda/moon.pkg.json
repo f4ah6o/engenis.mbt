@@ -1,6 +1,0 @@
-{
-  "import": [
-    { "path": "f4ah6o/engenis/src/html", "alias": "html" },
-    { "path": "f4ah6o/engenis/src/router", "alias": "router" }
-  ]
-}

@@ -1,0 +1,6 @@
+import { "f4ah6o/htmx/src/htmx" as @htmx }
+
+options(
+  is_main: true,
+  targets: { "main.mbt": [ "js", "wasm", "wasm-gc" ] },
+)

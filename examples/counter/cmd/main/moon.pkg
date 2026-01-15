@@ -1,0 +1,10 @@
+import { "f4ah6o/engenis/src/http", "moonbitlang/async" }
+
+options(
+  is_main: true,
+  targets: {
+    "main.mbt": [ "native" ],
+    "main_js.mbt": [ "js", "wasm", "wasm-gc" ],
+  },
+  "warn-list": "-29",
+)

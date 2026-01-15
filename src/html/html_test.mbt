@@ -237,27 +237,30 @@ test "pbt escape_html preserves UTF-8" {
 
   // 混合コンテンツでエスケープが正しく動作する
   let mixed = @html.div().text("こんにちは<a>&test").render()
-  assert_true(mixed.contains("こんにちは"), msg="should preserve Japanese in mixed")
+  assert_true(
+    mixed.contains("こんにちは"),
+    msg="should preserve Japanese in mixed",
+  )
   assert_true(mixed.contains("&lt;"), msg="should escape < in mixed")
   assert_true(mixed.contains("&amp;"), msg="should escape & in mixed")
 
   // 日本語を含むタグも正しくエスケープされる
   let ja_tag = @html.div().text("<日本語>&").render()
-  assert_true(ja_tag.contains("日本語"), msg="should preserve Japanese in tag")
-  assert_true(ja_tag.contains("&lt;日本語&gt;"), msg="should escape tags with Japanese")
+  assert_true(
+    ja_tag.contains("日本語"),
+    msg="should preserve Japanese in tag",
+  )
+  assert_true(
+    ja_tag.contains("&lt;日本語&gt;"),
+    msg="should escape tags with Japanese",
+  )
   assert_true(ja_tag.contains("&amp;"), msg="should escape & with Japanese")
 }
 
 ///|
 /// PBT: escape_html は quote をエスケープする
 test "pbt escape_html escapes quotes" {
-  let test_cases = [
-    "\"test\"",
-    "'test'",
-    "\"日本語\"",
-    "'<test>'",
-  ]
-
+  let test_cases = ["\"test\"", "'test'", "\"日本語\"", "'<test>'"]
   for i = 0; i < test_cases.length(); i = i + 1 {
     let s = test_cases[i]
     let rendered = @html.div().text(s).render()
@@ -285,9 +288,7 @@ test "pbt swap strings are unique" {
     @html.Swap::Delete,
     @html.Swap::None,
   ]
-
   let seen : @hashmap.HashMap[String, String] = @hashmap.new()
-
   for i = 0; i < swaps.length(); i = i + 1 {
     let str = swaps[i].to_string()
     match seen.get(str) {

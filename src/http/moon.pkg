@@ -1,0 +1,18 @@
+import {
+  "moonbitlang/async/fs" as @async_fs,
+  "moonbitlang/async/http" as @async_http,
+  "moonbitlang/async/socket" as @async_socket,
+  "f4ah6o/engenis/src/html" as @html,
+  "f4ah6o/engenis/src/hda" as @hda,
+  "f4ah6o/engenis/src/router" as @router,
+}
+
+options(
+  targets: {
+    "async_bridge_native.mbt": [ "native" ],
+    "assets.mbt": [ "native" ],
+    "counter.mbt": [ "native" ],
+    "server.mbt": [ "native" ],
+  },
+  "warn-list": "-29",
+)
