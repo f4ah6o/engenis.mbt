@@ -1,0 +1,6 @@
+{
+  "is_main": true,
+  "import": [
+    { "path": "f4ah6o/engenis/src/client", "alias": "client" }
+  ]
+}
