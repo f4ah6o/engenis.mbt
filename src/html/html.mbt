@@ -186,6 +186,21 @@ pub fn Swap::to_string(self : Swap) -> String {
 }
 
 ///|
+pub fn Swap::from_string(s : String) -> Swap {
+  match s {
+    "innerHTML" => InnerHTML
+    "outerHTML" => OuterHTML
+    "beforebegin" => BeforeBegin
+    "afterbegin" => AfterBegin
+    "beforeend" => BeforeEnd
+    "afterend" => AfterEnd
+    "delete" => Delete
+    "none" => None
+    _ => None // 不明な値はデフォルトで None
+  }
+}
+
+///|
 /// トリガー修飾子
 pub(all) enum TriggerMod {
   Once
