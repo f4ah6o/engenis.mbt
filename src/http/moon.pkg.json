@@ -11,6 +11,7 @@
   "targets": {
     "async_bridge_native.mbt": ["native"],
     "server.mbt": ["native"],
-    "counter.mbt": ["native"]
+    "counter.mbt": ["native"],
+    "assets.mbt": ["native"]
   }
 }
