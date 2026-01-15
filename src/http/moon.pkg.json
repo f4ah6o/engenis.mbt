@@ -5,5 +5,10 @@
     { "path": "f4ah6o/engenis/src/html", "alias": "html" },
     { "path": "f4ah6o/engenis/src/hda", "alias": "hda" },
     { "path": "f4ah6o/engenis/src/router", "alias": "router" }
-  ]
+  ],
+  "targets": {
+    "async_bridge_native.mbt": ["native"],
+    "server.mbt": ["native"],
+    "counter.mbt": ["native"]
+  }
 }

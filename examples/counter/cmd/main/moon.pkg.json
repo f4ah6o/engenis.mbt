@@ -3,5 +3,9 @@
   "import": [
     { "path": "f4ah6o/engenis/src/http" },
     { "path": "moonbitlang/async" }
-  ]
+  ],
+  "targets": {
+    "main.mbt": ["native"],
+    "main_js.mbt": ["js", "wasm", "wasm-gc"]
+  }
 }
