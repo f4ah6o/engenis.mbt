@@ -1,53 +1,79 @@
 ///|
 /// Property-Based Tests for router package
-/// Auto-generated from engenis.pbt.mbt.md
+/// Auto-generated from router.pbt.md
 
 ///|
-test "prop_route_verb_matches_constructor" {
-  let route_get = Route::get("/test")
-  let route_post = Route::post("/test")
-  let route_put = Route::put("/test")
-  let route_delete = Route::delete("/test")
-  let route_patch = Route::patch("/test")
-
-  assert_eq(route_get.verb(), RouteMethod::Get)
-  assert_eq(route_post.verb(), RouteMethod::Post)
-  assert_eq(route_put.verb(), RouteMethod::Put)
-  assert_eq(route_delete.verb(), RouteMethod::Delete)
-  assert_eq(route_patch.verb(), RouteMethod::Patch)
-}
-
-///|
-test "prop_pathparams_set_increases_size" {
-  let empty = PathParams::new()
-  let with_one = empty.set("key1", "value1")
-  let with_two = with_one.set("key2", "value2")
-
-  match with_one.get("key1") {
-    Some(v) => assert_eq(v, "value1")
-    None => assert_true(false, msg="key1 should exist")
-  }
-
-  match with_two.get("key2") {
-    Some(v) => assert_eq(v, "value2")
-    None => assert_true(false, msg="key2 should exist")
-  }
-}
-
-///|
-test "prop_pathparams_set_overwrites" {
+test "prop_pathparams_new_empty" {
   let params = PathParams::new()
-  let with_v1 = params.set("key", "value1")
-  let with_v2 = with_v1.set("key", "value2")
+  assert_eq(params.segments.length(), 0, msg="new params should be empty")
+}
 
-  match with_v2.get("key") {
-    Some(v) => assert_eq(v, "value2", msg="should have new value")
-    None => assert_true(false, msg="key should exist")
+///|
+test "prop_pathparams_set_increases_length" {
+  let params1 = PathParams::new()
+  assert_eq(params1.segments.length(), 0)
+  let params2 = params1.set("key1", "value1")
+  assert_eq(params2.segments.length(), 1)
+  let params3 = params2.set("key2", "value2")
+  assert_eq(params3.segments.length(), 2)
+}
+
+///|
+test "prop_pathparams_get_retrieves_set" {
+  let params = PathParams::new().set("id", "123").set("name", "test")
+  match params.get("id") {
+    Some(v) => assert_eq(v, "123")
+    None => assert_true(false, msg="should find id")
+  }
+  match params.get("name") {
+    Some(v) => assert_eq(v, "test")
+    None => assert_true(false, msg="should find name")
+  }
+  match params.get("missing") {
+    Some(_) => assert_true(false, msg="should not find missing")
+    None => ()
   }
 }
 
 ///|
-test "prop_pathparams_require_returns_value" {
-  let params = PathParams::new().set("id", "123")
-  assert_eq(params.require("id"), "123")
+test "prop_pathparams_set_updates_existing" {
+  let params1 = PathParams::new().set("key", "value1")
+  assert_eq(params1.segments.length(), 1)
+  let params2 = params1.set("key", "value2")
+  assert_eq(params2.segments.length(), 1)
+  match params2.get("key") {
+    Some(v) => assert_eq(v, "value2")
+    None => assert_true(false, msg="should find updated key")
+  }
+}
+
+///|
+test "prop_route_verb_matches" {
+  let get_route = Route::get("/test")
+  assert_eq(get_route.verb(), RouteMethod::Get)
+  let post_route = Route::post("/submit")
+  assert_eq(post_route.verb(), RouteMethod::Post)
+  let put_route = Route::put("/update")
+  assert_eq(put_route.verb(), RouteMethod::Put)
+  let delete_route = Route::delete("/remove")
+  assert_eq(delete_route.verb(), RouteMethod::Delete)
+  let patch_route = Route::patch("/modify")
+  assert_eq(patch_route.verb(), RouteMethod::Patch)
+}
+
+///|
+test "prop_route_path_preserved" {
+  let path = "/users/:id/posts"
+  let route = Route::get(path)
+  assert_eq(route.path(), "/users/:id/posts")
+}
+
+///|
+test "prop_path_normalization_adds_leading_slash" {
+  let normalized1 = Route::get("test")
+  assert_eq(normalized1.path(), "/test")
+  let normalized2 = Route::get("/test")
+  assert_eq(normalized2.path(), "/test")
+  let normalized3 = Route::get("")
+  assert_eq(normalized3.path(), "/")
 }
