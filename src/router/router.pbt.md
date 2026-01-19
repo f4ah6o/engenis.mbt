@@ -7,7 +7,7 @@
 
 - **Source**: `/Users/fu2hito/src/moonbit/engenis.mbt-pbt/src/router`
 - **Generated**: 2026-01-16
-- **Patterns Detected**: 1
+- **Patterns Detected**: 15+
 
 ## Invariant Targets
 
@@ -188,5 +188,309 @@ test "prop_pathparams_fold_iterates" {
 
   let count = params.fold(0, fn(acc, _key, _val) { acc + 1 })
   assert_eq(count, 3)
+}
+```
+
+### prop_normalize_path_empty_becomes_root
+
+Property: Empty string becomes "/" after normalization
+
+```mbt check
+///|
+test "prop_normalize_path_empty_becomes_root" {
+  // Normalize by creating routes and checking path()
+  let route = Route::get("")
+  assert_eq(route.path(), "/", msg="empty path should normalize to /")
+}
+```
+
+### prop_normalize_path_adds_leading_slash
+
+Property: Leading slash is added to paths without one
+
+```mbt check
+///|
+test "prop_normalize_path_adds_leading_slash" {
+  let route = Route::post("users")
+  let path = route.path()
+  assert_true(path.has_prefix("/"), msg="should have leading slash")
+  assert_eq(path, "/users", msg="should be /users")
+}
+```
+
+### prop_normalize_path_preserves_leading_slash
+
+Property: Existing leading slash is preserved
+
+```mbt check
+///|
+test "prop_normalize_path_preserves_leading_slash" {
+  let route = Route::put("/api/data")
+  let path = route.path()
+  assert_true(path.has_prefix("/"), msg="should have leading slash")
+  assert_eq(path, "/api/data", msg="should preserve path with leading slash")
+}
+```
+
+### prop_route_get_creates_get_variant
+
+Property: Route::get creates Get variant
+
+```mbt check
+///|
+test "prop_route_get_creates_get_variant" {
+  let route = Route::get("/test")
+  match route {
+    Get(_) => ()
+    _ => assert_true(false, msg="should be Get variant")
+  }
+}
+```
+
+### prop_route_post_creates_post_variant
+
+Property: Route::post creates Post variant
+
+```mbt check
+///|
+test "prop_route_post_creates_post_variant" {
+  let route = Route::post("/submit")
+  match route {
+    Post(_) => ()
+    _ => assert_true(false, msg="should be Post variant")
+  }
+}
+```
+
+### prop_route_put_creates_put_variant
+
+Property: Route::put creates Put variant
+
+```mbt check
+///|
+test "prop_route_put_creates_put_variant" {
+  let route = Route::put("/update")
+  match route {
+    Put(_) => ()
+    _ => assert_true(false, msg="should be Put variant")
+  }
+}
+```
+
+### prop_route_delete_creates_delete_variant
+
+Property: Route::delete creates Delete variant
+
+```mbt check
+///|
+test "prop_route_delete_creates_delete_variant" {
+  let route = Route::delete("/remove")
+  match route {
+    Delete(_) => ()
+    _ => assert_true(false, msg="should be Delete variant")
+  }
+}
+```
+
+### prop_route_patch_creates_patch_variant
+
+Property: Route::patch creates Patch variant
+
+```mbt check
+///|
+test "prop_route_patch_creates_patch_variant" {
+  let route = Route::patch("/modify")
+  match route {
+    Patch(_) => ()
+    _ => assert_true(false, msg="should be Patch variant")
+  }
+}
+```
+
+### prop_route_path_roundtrip
+
+Property: Path is preserved through route creation
+
+```mbt check
+///|
+test "prop_route_path_roundtrip" {
+  let paths = ["/users", "/posts/:id", "/api/v1/data"]
+  for i = 0; i < paths.length(); i = i + 1 {
+    let original = paths[i]
+    let route = Route::get(original)
+    let retrieved = route.path()
+    assert_eq(retrieved, original, msg="path should be preserved")
+  }
+}
+```
+
+### prop_route_path_normalized
+
+Property: All routes normalize paths consistently
+
+```mbt check
+///|
+test "prop_route_path_normalized" {
+  let path1 = Route::get("test").path()
+  let path2 = Route::get("/test").path()
+  assert_eq(path1, path2, msg="paths should normalize to same value")
+
+  let path3 = Route::post("api").path()
+  let path4 = Route::post("/api").path()
+  assert_eq(path3, path4, msg="post paths should normalize")
+}
+```
+
+### prop_route_verb_get_matches
+
+Property: Get route returns RouteMethod::Get
+
+```mbt check
+///|
+test "prop_route_verb_get_matches" {
+  let route = Route::get("/test")
+  let verb = route.verb()
+  assert_eq(verb, RouteMethod::Get, msg="get route should have Get verb")
+}
+```
+
+### prop_route_verb_post_matches
+
+Property: Post route returns RouteMethod::Post
+
+```mbt check
+///|
+test "prop_route_verb_post_matches" {
+  let route = Route::post("/submit")
+  let verb = route.verb()
+  assert_eq(verb, RouteMethod::Post, msg="post route should have Post verb")
+}
+```
+
+### prop_route_verb_put_matches
+
+Property: Put route returns RouteMethod::Put
+
+```mbt check
+///|
+test "prop_route_verb_put_matches" {
+  let route = Route::put("/update")
+  let verb = route.verb()
+  assert_eq(verb, RouteMethod::Put, msg="put route should have Put verb")
+}
+```
+
+### prop_route_verb_delete_matches
+
+Property: Delete route returns RouteMethod::Delete
+
+```mbt check
+///|
+test "prop_route_verb_delete_matches" {
+  let route = Route::delete("/remove")
+  let verb = route.verb()
+  assert_eq(verb, RouteMethod::Delete, msg="delete route should have Delete verb")
+}
+```
+
+### prop_route_verb_patch_matches
+
+Property: Patch route returns RouteMethod::Patch
+
+```mbt check
+///|
+test "prop_route_verb_patch_matches" {
+  let route = Route::patch("/modify")
+  let verb = route.verb()
+  assert_eq(verb, RouteMethod::Patch, msg="patch route should have Patch verb")
+}
+```
+
+### prop_pathparams_set_overwrites
+
+Property: Setting same key overwrites value
+
+```mbt check
+///|
+test "prop_pathparams_set_overwrites" {
+  let params1 = PathParams::new().set("key", "value1")
+  match params1.get("key") {
+    Some(v) => assert_eq(v, "value1", msg="should have first value")
+    None => assert_true(false, msg="should have value")
+  }
+
+  let params2 = params1.set("key", "value2")
+  match params2.get("key") {
+    Some(v) => assert_eq(v, "value2", msg="should have second value")
+    None => assert_true(false, msg="should have updated value")
+  }
+}
+```
+
+### prop_pathparams_empty_key
+
+Property: Empty string key behaves correctly
+
+```mbt check
+///|
+test "prop_pathparams_empty_key" {
+  let params = PathParams::new().set("", "empty_key_value")
+  match params.get("") {
+    Some(v) => assert_eq(v, "empty_key_value", msg="should handle empty key")
+    None => assert_true(false, msg="should find empty key")
+  }
+}
+```
+
+### prop_pathparams_special_characters
+
+Property: Special characters in keys and values are handled
+
+```mbt check
+///|
+test "prop_pathparams_special_characters" {
+  let params = PathParams::new()
+    .set("key-with-dash", "value-with-dash")
+    .set("key_with_underscore", "value_with_underscore")
+    .set("key.with.dot", "value.with.dot")
+
+  match params.get("key-with-dash") {
+    Some(v) => assert_eq(v, "value-with-dash", msg="should handle dash")
+    None => assert_true(false, msg="should find dash key")
+  }
+
+  match params.get("key_with_underscore") {
+    Some(v) => assert_eq(v, "value_with_underscore", msg="should handle underscore")
+    None => assert_true(false, msg="should find underscore key")
+  }
+
+  match params.get("key.with.dot") {
+    Some(v) => assert_eq(v, "value.with.dot", msg="should handle dot")
+    None => assert_true(false, msg="should find dot key")
+  }
+}
+```
+
+### prop_pathparams_is_empty_true_for_new
+
+Property: New PathParams instance is empty
+
+```mbt check
+///|
+test "prop_pathparams_is_empty_true_for_new" {
+  let params = PathParams::new()
+  assert_true(params.is_empty(), msg="new params should be empty")
+}
+```
+
+### prop_pathparams_is_empty_false_after_set
+
+Property: PathParams is not empty after set
+
+```mbt check
+///|
+test "prop_pathparams_is_empty_false_after_set" {
+  let params = PathParams::new().set("key", "value")
+  assert_true(!params.is_empty(), msg="params should not be empty after set")
 }
 ```

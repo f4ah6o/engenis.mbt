@@ -7,7 +7,7 @@
 
 - **Source**: `/Users/fu2hito/src/moonbit/engenis.mbt-pbt/src/html`
 - **Generated**: 2026-01-16
-- **Patterns Detected**: 11
+- **Patterns Detected**: 35+
 
 ## Round-Trip Targets
 
@@ -281,5 +281,486 @@ test "prop_trigger_to_string_combines_mods" {
   assert_true(result.contains("click"), msg="should contain event name")
   assert_true(result.contains("once"), msg="should contain once modifier")
   assert_true(result.contains("from:#btn"), msg="should contain from modifier")
+}
+```
+
+### prop_html_raw_preserves_content
+
+Property: raw() bypasses HTML escaping
+
+```mbt check
+///|
+test "prop_html_raw_preserves_content" {
+  let raw_html = raw("<script>alert('xss')</script>")
+  let rendered = raw_html.render()
+  assert_true(rendered.contains("<script>"), msg="should preserve raw tags")
+  assert_true(rendered.contains("alert('xss')"), msg="should preserve raw content")
+}
+```
+
+### prop_html_raw_no_escaping
+
+Property: raw() does not escape special characters
+
+```mbt check
+///|
+test "prop_html_raw_no_escaping" {
+  let raw_content = raw("<div>&\"'</div>")
+  let rendered = raw_content.render()
+  assert_true(rendered.contains("<div>"), msg="should not escape <")
+  assert_true(rendered.contains("&"), msg="should not escape &")
+  assert_true(rendered.contains("\""), msg="should not escape quotes")
+}
+```
+
+### prop_html_when_true_renders_then
+
+Property: when(true, then) renders the then branch
+
+```mbt check
+///|
+test "prop_html_when_true_renders_then" {
+  let html = when(true, div().text("shown"))
+  let rendered = html.render()
+  assert_true(rendered.contains("shown"), msg="should render then branch")
+  assert_true(!rendered.contains("hidden"), msg="should not render else content")
+}
+```
+
+### prop_html_when_false_no_else_renders_empty
+
+Property: when(false, then) without else renders empty string
+
+```mbt check
+///|
+test "prop_html_when_false_no_else_renders_empty" {
+  let html = when(false, div().text("hidden"))
+  let rendered = html.render()
+  assert_eq(rendered, "", msg="should render empty string")
+}
+```
+
+### prop_html_when_else_false_renders_else
+
+Property: when_else(false, then, else) renders the else branch
+
+```mbt check
+///|
+test "prop_html_when_else_false_renders_else" {
+  let html = when_else(false, div().text("then"), div().text("else"))
+  let rendered = html.render()
+  assert_true(rendered.contains("else"), msg="should render else branch")
+  assert_true(!rendered.contains("then"), msg="should not render then content")
+}
+```
+
+### prop_fragment_empty_renders_empty
+
+Property: Empty fragment renders empty string
+
+```mbt check
+///|
+test "prop_fragment_empty_renders_empty" {
+  let frag = fragment([])
+  let rendered = frag.render()
+  assert_eq(rendered, "", msg="empty fragment should render empty string")
+}
+```
+
+### prop_fragment_combines_children
+
+Property: Fragment combines children without wrapper
+
+```mbt check
+///|
+test "prop_fragment_combines_children" {
+  let frag = fragment([p().text("first"), p().text("second")])
+  let rendered = frag.render()
+  assert_true(rendered.contains("<p>first</p>"), msg="should contain first child")
+  assert_true(rendered.contains("<p>second</p>"), msg="should contain second child")
+  assert_true(!rendered.contains("<fragment>"), msg="should not have wrapper tag")
+}
+```
+
+### prop_fragment_nested
+
+Property: Nested fragments are flattened
+
+```mbt check
+///|
+test "prop_fragment_nested" {
+  let inner = fragment([span().text("a")])
+  let outer = fragment([inner, span().text("b")])
+  let rendered = outer.render()
+  assert_true(rendered.contains("<span>a</span>"), msg="should contain inner")
+  assert_true(rendered.contains("<span>b</span>"), msg="should contain outer")
+}
+```
+
+### prop_void_element_no_closing_tag
+
+Property: Void elements (br, hr, img, input, meta, link) have no closing tag
+
+```mbt check
+///|
+test "prop_void_element_no_closing_tag" {
+  let br_html = br().empty()
+  let br_rendered = br_html.render()
+  assert_true(br_rendered.contains("<br>"), msg="should have br tag")
+  assert_true(!br_rendered.contains("</br>"), msg="should not have closing br")
+
+  let hr_html = hr().empty()
+  let hr_rendered = hr_html.render()
+  assert_true(hr_rendered.contains("<hr>"), msg="should have hr tag")
+  assert_true(!hr_rendered.contains("</hr>"), msg="should not have closing hr")
+
+  let img_html = img().empty()
+  let img_rendered = img_html.render()
+  assert_true(img_rendered.contains("<img>"), msg="should have img tag")
+  assert_true(!img_rendered.contains("</img>"), msg="should not have closing img")
+
+  let input_html = input().empty()
+  let input_rendered = input_html.render()
+  assert_true(input_rendered.contains("<input>"), msg="should have input tag")
+  assert_true(!input_rendered.contains("</input>"), msg="should not have closing input")
+
+  let meta_html = meta().empty()
+  let meta_rendered = meta_html.render()
+  assert_true(meta_rendered.contains("<meta>"), msg="should have meta tag")
+  assert_true(!meta_rendered.contains("</meta>"), msg="should not have closing meta")
+
+  let link_html = link_tag().empty()
+  let link_rendered = link_html.render()
+  assert_true(link_rendered.contains("<link>"), msg="should have link tag")
+  assert_true(!link_rendered.contains("</link>"), msg="should not have closing link")
+}
+```
+
+### prop_non_void_element_has_closing_tag
+
+Property: Non-void elements (div, p, span) have closing tags
+
+```mbt check
+///|
+test "prop_non_void_element_has_closing_tag" {
+  let div_html = div().empty()
+  let div_rendered = div_html.render()
+  assert_true(div_rendered.contains("<div>"), msg="should have div open")
+  assert_true(div_rendered.contains("</div>"), msg="should have div close")
+
+  let p_html = p().empty()
+  let p_rendered = p_html.render()
+  assert_true(p_rendered.contains("<p>"), msg="should have p open")
+  assert_true(p_rendered.contains("</p>"), msg="should have p close")
+
+  let span_html = span().empty()
+  let span_rendered = span_html.render()
+  assert_true(span_rendered.contains("<span>"), msg="should have span open")
+  assert_true(span_rendered.contains("</span>"), msg="should have span close")
+}
+```
+
+### prop_escape_attr_escapes_quotes
+
+Property: Attribute values have quotes escaped
+
+```mbt check
+///|
+test "prop_escape_attr_escapes_quotes" {
+  let html = div().attr("title", Str("hello \"world\"")).empty()
+  let rendered = html.render()
+  assert_true(rendered.contains("&quot;"), msg="should escape quotes in attribute")
+}
+```
+
+### prop_escape_attr_escapes_ampersand
+
+Property: Attribute values have ampersands escaped
+
+```mbt check
+///|
+test "prop_escape_attr_escapes_ampersand" {
+  let html = div().attr("data", Str("a & b")).empty()
+  let rendered = html.render()
+  assert_true(rendered.contains("&amp;"), msg="should escape ampersand in attribute")
+}
+```
+
+### prop_escape_attr_escapes_lt_gt
+
+Property: Attribute values have < > escaped
+
+```mbt check
+///|
+test "prop_escape_attr_escapes_lt_gt" {
+  let html = div().attr("content", Str("<tag>")).empty()
+  let rendered = html.render()
+  assert_true(rendered.contains("&lt;"), msg="should escape < in attribute")
+  assert_true(rendered.contains("&gt;"), msg="should escape > in attribute")
+}
+```
+
+### prop_elementbuilder_text_escapes
+
+Property: ElementBuilder::text() escapes content
+
+```mbt check
+///|
+test "prop_elementbuilder_text_escapes" {
+  let html = div().text("<script>")
+  let rendered = html.render()
+  assert_true(rendered.contains("&lt;script&gt;"), msg="should escape text content")
+}
+```
+
+### prop_elementbuilder_empty_no_children
+
+Property: ElementBuilder::empty() creates element with no children
+
+```mbt check
+///|
+test "prop_elementbuilder_empty_no_children" {
+  let html = div().empty()
+  let rendered = html.render()
+  assert_true(rendered.contains("<div></div>"), msg="should have empty div")
+}
+```
+
+### prop_elementbuilder_child_single
+
+Property: ElementBuilder::child() adds single child
+
+```mbt check
+///|
+test "prop_elementbuilder_child_single" {
+  let html = div().child(span().text("child"))
+  let rendered = html.render()
+  assert_true(rendered.contains("<div><span>child</span></div>"), msg="should wrap child")
+}
+```
+
+### prop_elementbuilder_children_multiple
+
+Property: ElementBuilder::children() adds multiple children
+
+```mbt check
+///|
+test "prop_elementbuilder_children_multiple" {
+  let html = div().children([span().text("a"), span().text("b")])
+  let rendered = html.render()
+  assert_true(rendered.contains("<span>a</span>"), msg="should contain first child")
+  assert_true(rendered.contains("<span>b</span>"), msg="should contain second child")
+}
+```
+
+### prop_elementbuilder_attr_adds
+
+Property: ElementBuilder::attr() adds attribute
+
+```mbt check
+///|
+test "prop_elementbuilder_attr_adds" {
+  let html = div().attr("id", Str("test")).empty()
+  let rendered = html.render()
+  assert_true(rendered.contains("id=\"test\""), msg="should have id attribute")
+}
+```
+
+### prop_elementbuilder_data_prefixes
+
+Property: ElementBuilder::data() prefixes with "data-"
+
+```mbt check
+///|
+test "prop_elementbuilder_data_prefixes" {
+  let html = div().data("test", "value").empty()
+  let rendered = html.render()
+  assert_true(rendered.contains("data-test=\"value\""), msg="should have data- prefix")
+}
+```
+
+### prop_helper_doctype_constant
+
+Property: doctype() returns <!DOCTYPE html>
+
+```mbt check
+///|
+test "prop_helper_doctype_constant" {
+  let doc = doctype()
+  let rendered = doc.render()
+  assert_eq(rendered, "<!DOCTYPE html>", msg="should return doctype string")
+}
+```
+
+### prop_helper_charset_meta
+
+Property: charset() generates meta charset element
+
+```mbt check
+///|
+test "prop_helper_charset_meta" {
+  let meta_charset = charset("utf-8")
+  let rendered = meta_charset.render()
+  assert_true(rendered.contains("<meta"), msg="should be meta tag")
+  assert_true(rendered.contains("charset=\"utf-8\""), msg="should have charset attribute")
+  assert_true(!rendered.contains("</meta>"), msg="should be void element")
+}
+```
+
+### prop_helper_viewport_meta
+
+Property: viewport() generates meta viewport element
+
+```mbt check
+///|
+test "prop_helper_viewport_meta" {
+  let meta_viewport = viewport("width=device-width")
+  let rendered = meta_viewport.render()
+  assert_true(rendered.contains("<meta"), msg="should be meta tag")
+  assert_true(rendered.contains("name=\"viewport\""), msg="should have name=viewport")
+  assert_true(rendered.contains("content=\"width=device-width\""), msg="should have content")
+}
+```
+
+### prop_helper_stylesheet_link
+
+Property: stylesheet() generates link rel="stylesheet" element
+
+```mbt check
+///|
+test "prop_helper_stylesheet_link" {
+  let css = stylesheet("/style.css")
+  let rendered = css.render()
+  assert_true(rendered.contains("<link"), msg="should be link tag")
+  assert_true(rendered.contains("rel=\"stylesheet\""), msg="should have rel=stylesheet")
+  assert_true(rendered.contains("href=\"/style.css\""), msg="should have href")
+  assert_true(!rendered.contains("</link>"), msg="should be void element")
+}
+```
+
+### prop_trigger_multiple_joins_with_comma
+
+Property: Trigger::Multiple joins triggers with comma
+
+```mbt check
+///|
+test "prop_trigger_multiple_joins_with_comma" {
+  let trigger = Multiple([Event("click"), Event("change"), Event("submit")])
+  let result = trigger.to_string()
+  assert_true(result.contains("click"), msg="should contain click")
+  assert_true(result.contains("change"), msg="should contain change")
+  assert_true(result.contains("submit"), msg="should contain submit")
+  assert_true(result.contains(", "), msg="should have comma separator")
+}
+```
+
+### prop_trigger_event_with_empty_mods
+
+Property: EventWithMods with empty modifier list returns just event name
+
+```mbt check
+///|
+test "prop_trigger_event_with_empty_mods" {
+  let trigger = EventWithMods("load", [])
+  let result = trigger.to_string()
+  assert_eq(result, "load", msg="should return only event name with no mods")
+}
+```
+
+### prop_nested_elements_preserve_structure
+
+Property: Nested elements preserve structure
+
+```mbt check
+///|
+test "prop_nested_elements_preserve_structure" {
+  let html = div().child(
+    p().child(
+      span().text("nested")
+    )
+  )
+  let rendered = html.render()
+  assert_true(rendered.contains("<div><p><span>nested</span></p></div>"), msg="should preserve nesting")
+}
+```
+
+### prop_deeply_nested_rendering
+
+Property: Deeply nested elements render correctly
+
+```mbt check
+///|
+test "prop_deeply_nested_rendering" {
+  let html = div().child(
+    div().child(
+      div().child(
+        div().child(
+          span().text("deep")
+        )
+      )
+    )
+  )
+  let rendered = html.render()
+  assert_true(rendered.contains("deep"), msg="should render deep content")
+  // Should have 4 opening div tags
+  let div_count = rendered.split("<div>").length() - 1
+  assert_eq(div_count, 4, msg="should have 4 div levels")
+}
+```
+
+### prop_mixed_content_text_and_elements
+
+Property: Mixed text and element content renders correctly
+
+```mbt check
+///|
+test "prop_mixed_content_text_and_elements" {
+  let html = div().children([text("before"), span().text("element"), text("after")])
+  let rendered = html.render()
+  assert_true(rendered.contains("before"), msg="should have text before")
+  assert_true(rendered.contains("<span>element</span>"), msg="should have element")
+  assert_true(rendered.contains("after"), msg="should have text after")
+}
+```
+
+### prop_empty_text_renders_nothing
+
+Property: Empty text renders empty string
+
+```mbt check
+///|
+test "prop_empty_text_renders_nothing" {
+  let html = text("")
+  let rendered = html.render()
+  assert_eq(rendered, "", msg="empty text should render nothing")
+}
+```
+
+### prop_special_chars_preserved_in_raw
+
+Property: Special characters are preserved in raw HTML
+
+```mbt check
+///|
+test "prop_special_chars_preserved_in_raw" {
+  let raw_html = raw("<>&\"'")
+  let rendered = raw_html.render()
+  assert_true(rendered.contains("<"), msg="should preserve <")
+  assert_true(rendered.contains(">"), msg="should preserve >")
+  assert_true(rendered.contains("&"), msg="should preserve &")
+  assert_true(rendered.contains("\""), msg="should preserve quotes")
+}
+```
+
+### prop_unicode_attributes
+
+Property: Unicode characters in attribute values are preserved
+
+```mbt check
+///|
+test "prop_unicode_attributes" {
+  let html = div().attr("title", Str("こんにちは")).empty()
+  let rendered = html.render()
+  assert_true(rendered.contains("こんにちは"), msg="should preserve unicode in attributes")
 }
 ```

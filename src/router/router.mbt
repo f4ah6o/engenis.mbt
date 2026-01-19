@@ -31,3 +31,8 @@ pub fn PathParams::set(
   new_segments.set(key, value)
   { segments: new_segments }
 }
+
+///|
+pub fn PathParams::is_empty(self : PathParams) -> Bool {
+  self.segments.length() == 0
+}
